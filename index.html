@@ -4180,14 +4180,15 @@ Posso confirmar? 😊`;
   async function adminBioAnalisarFoto(base64) {
     const prompt = `Voce e um especialista em leitura de balanças de bioimpedancia. Analise esta foto da balança e extraia todos os valores numericos visiveis. Responda SOMENTE com JSON valido neste formato exato, sem texto adicional, sem explicacoes, sem markdown. Use null para campos que nao estiverem visiveis na foto: {"data":"${horaBrasilia().toISOString().split('T')[0]}","peso":null,"muscular":null,"gordakg":null,"gordapct":null,"visceral":null,"aguapct":null,"imc":null,"idadecorpo":null,"bmr":null}`;
     try {
-      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4', {
+      const resp = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [
+          model: 'gemini-2.0-flash',
+          payload: { contents: [{ parts: [
             { inline_data: { mime_type: 'image/jpeg', data: base64 } },
             { text: prompt }
-          ]}]
+          ]}] }
         })
       });
       const d = await resp.json();
@@ -4397,19 +4398,21 @@ Posso confirmar? 😊`;
     const refeicao = regDetectarRefeicao();
     const prompt = `Voce e um nutricionista. Analise esta foto de prato. Identifique os alimentos visiveis com quantidades estimadas em gramas. Calcule o total de calorias e macronutrientes. Responda SOMENTE com JSON valido neste formato exato, sem texto adicional, sem explicacoes: {"refeicao":"${refeicao}","totalKcal":487,"proteina":38,"carboidrato":52,"gordura":12,"alimentos":[{"nome":"Frango grelhado","qtd":"150g"}]}`;
     try {
-      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4', {
+      const resp = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [
-            { inline_data: { mime_type: 'image/jpeg', data: base64 } },
-            { text: prompt }
-          ]}],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+          model: 'gemini-2.0-flash',
+          payload: {
+            contents: [{ parts: [
+              { inline_data: { mime_type: 'image/jpeg', data: base64 } },
+              { text: prompt }
+            ]}],
+            generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+          }
         })
       });
       const d = await resp.json();
-      console.log('Gemini foto:', JSON.stringify(d).substring(0, 300));
       if (d.error) { console.error('Gemini erro:', d.error); return null; }
       const texto = (d.candidates?.[0]?.content?.parts?.[0]?.text || '').replace(/```json|```/g,'').trim();
       if (!texto) { return null; }
@@ -4421,12 +4424,12 @@ Posso confirmar? 😊`;
   async function regAnalisarTexto(texto, refeicao) {
     const prompt = `Voce e um nutricionista. O paciente descreveu: "${texto}". Refeicao: ${refeicao}. Identifique os alimentos e calcule calorias e macros. Responda SOMENTE com JSON valido neste formato, sem texto adicional: {"refeicao":"${refeicao}","totalKcal":400,"proteina":30,"carboidrato":40,"gordura":10,"alimentos":[{"nome":"Alimento","qtd":"100g"}]}`;
     try {
-      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4', {
+      const resp = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+          model: 'gemini-2.0-flash',
+          payload: { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1, maxOutputTokens: 1000 } }
         })
       });
       const d = await resp.json();
@@ -4766,13 +4769,12 @@ Posso confirmar? 😊`;
           parts: [{ text: m.content }]
         });
       });
-      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4', {
+      const resp = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: geminiContents })
+        body: JSON.stringify({ model: 'gemini-2.0-flash', payload: { contents: geminiContents } })
       });
       const d = await resp.json();
-      console.log('Gemini duvida:', JSON.stringify(d).substring(0, 200));
       const resposta = d.candidates?.[0]?.content?.parts?.[0]?.text || 'Nao consegui processar sua pergunta. Tente novamente.';
       duvidaHistorico.push({ role: 'assistant', content: resposta });
 
