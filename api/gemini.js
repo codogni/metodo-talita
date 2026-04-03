@@ -35,7 +35,20 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { model, payload } = req.body;
+    let body = req.body;
+    if (typeof body === 'string') {
+      body = JSON.parse(body);
+    }
+    if (!body) {
+      const rawBody = await new Promise((resolve) => {
+        let data = '';
+        req.on('data', chunk => data += chunk);
+        req.on('end', () => resolve(data));
+      });
+      body = JSON.parse(rawBody);
+    }
+
+    const { model, payload } = body;
     const path = `/v1beta/models/${model || "gemini-2.0-flash"}:generateContent?key=${GEMINI_KEY}`;
     const result = await httpsPost(path, payload);
     res.status(200).send(result);
