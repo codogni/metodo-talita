@@ -4180,7 +4180,7 @@ Posso confirmar? 😊`;
   async function adminBioAnalisarFoto(base64) {
     const prompt = `Voce e um especialista em leitura de balanças de bioimpedancia. Analise esta foto da balança e extraia todos os valores numericos visiveis. Responda SOMENTE com JSON valido neste formato exato, sem texto adicional, sem explicacoes, sem markdown. Use null para campos que nao estiverem visiveis na foto: {"data":"${horaBrasilia().toISOString().split('T')[0]}","peso":null,"muscular":null,"gordakg":null,"gordapct":null,"visceral":null,"aguapct":null,"imc":null,"idadecorpo":null,"bmr":null}`;
     try {
-      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCrt11RFkELFePpEDyLDSKT0MbEjTtETdI', {
+      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -4397,7 +4397,7 @@ Posso confirmar? 😊`;
     const refeicao = regDetectarRefeicao();
     const prompt = `Voce e um nutricionista. Analise esta foto de prato. Identifique os alimentos visiveis com quantidades estimadas em gramas. Calcule o total de calorias e macronutrientes. Responda SOMENTE com JSON valido neste formato exato, sem texto adicional, sem explicacoes: {"refeicao":"${refeicao}","totalKcal":487,"proteina":38,"carboidrato":52,"gordura":12,"alimentos":[{"nome":"Frango grelhado","qtd":"150g"}]}`;
     try {
-      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCrt11RFkELFePpEDyLDSKT0MbEjTtETdI', {
+      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -4421,7 +4421,7 @@ Posso confirmar? 😊`;
   async function regAnalisarTexto(texto, refeicao) {
     const prompt = `Voce e um nutricionista. O paciente descreveu: "${texto}". Refeicao: ${refeicao}. Identifique os alimentos e calcule calorias e macros. Responda SOMENTE com JSON valido neste formato, sem texto adicional: {"refeicao":"${refeicao}","totalKcal":400,"proteina":30,"carboidrato":40,"gordura":10,"alimentos":[{"nome":"Alimento","qtd":"100g"}]}`;
     try {
-      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCrt11RFkELFePpEDyLDSKT0MbEjTtETdI', {
+      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -4766,7 +4766,7 @@ Posso confirmar? 😊`;
           parts: [{ text: m.content }]
         });
       });
-      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCrt11RFkELFePpEDyLDSKT0MbEjTtETdI', {
+      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: geminiContents })
