@@ -1806,8 +1806,8 @@
             <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </div>
           <div>
-            <div class="quick-label">Foto do Prato</div>
-            <div class="quick-sub">Analise com IA</div>
+            <div class="quick-label">Registro Alimentar</div>
+            <div class="quick-sub">Recordatório 24h</div>
           </div>
         </div>
 
@@ -1822,7 +1822,16 @@
         </div>
       </div>
 
-
+      <!-- Frase do dia -->
+      <div class="frase-card fade-up-5">
+        <div class="frase-icone">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div>
+          <div class="frase-label">Frase do dia</div>
+          <div class="frase-texto" id="frase-do-dia">Carregando...</div>
+        </div>
+      </div>
 
       <!-- Pontos da semana -->
       <div class="pontos-card fade-up-5">
@@ -2173,19 +2182,19 @@
 <div id="screen-registrar" class="screen">
   <div class="reg-wrap">
     <div class="reg-topbar fade-up">
-      <div class="reg-topbar-title">Foto do <em>Prato</em></div>
+      <div class="reg-topbar-title">Registro <em>Alimentar</em></div>
       <div class="reg-topbar-sub">Registre suas refeicoes do dia</div>
     </div>
 
     <div class="reg-body">
       <div class="reg-tabs">
-        <button class="reg-tab" id="regtab-foto" onclick="regMudarTab('foto')" style="display:none">Foto do prato</button>
-        <button class="reg-tab active" id="regtab-manual" onclick="regMudarTab('manual')">Adicionar manual</button>
+        <button class="reg-tab active" id="regtab-foto" onclick="regMudarTab('foto')">Foto do prato</button>
+        <button class="reg-tab active" id="regtab-manual" onclick="regMudarTab('manual')">Recordatório 24h</button>
         <button class="reg-tab" id="regtab-dia" onclick="regMudarTab('dia')">Meu dia</button>
       </div>
 
       <!-- PAINEL FOTO -->
-      <div id="reg-painel-foto" style="display:none">
+      <div id="reg-painel-foto">
         <div id="reg-estado-upload" class="reg-upload-zone">
           <div class="reg-upload-area" onclick="regSimularAnalise()">
             <div class="reg-upload-icon">
@@ -2232,14 +2241,7 @@
       </div>
 
       <!-- PAINEL MANUAL -->
-      <div id="reg-painel-manual">
-        <div style="background:linear-gradient(135deg,#4A6358,#6B8F7A);border-radius:12px;padding:14px 16px;margin:16px 16px 0;display:flex;align-items:center;gap:12px;">
-          <div style="font-size:22px;">💚</div>
-          <div>
-            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px;">Frase do dia</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:14px;color:#fff;line-height:1.5;" id="frase-do-dia">Carregando...</div>
-          </div>
-        </div>
+      <div id="reg-painel-manual" style="display:none;">
         <div id="reg-manual-form" class="reg-manual-card">
           <div class="reg-manual-titulo">Adicionar refeicao</div>
           <div class="reg-manual-sub">Descreva o que comeu com o nome e a quantidade de cada alimento.</div>
@@ -2464,7 +2466,6 @@
     <div class="duvidas-topbar fade-up">
       <div class="duvidas-topbar-title">Minhas <em>Duvidas</em></div>
       <div class="duvidas-topbar-sub">Pergunte sobre alimentação e nutrição</div>
-      <div style="margin-top:10px;background:#FFF3CD;border-radius:8px;padding:10px 14px;font-size:12px;color:#856404;text-align:center;font-weight:500;">Em breve disponível</div>
     </div>
 
     <!-- Área do chat -->
@@ -2720,22 +2721,7 @@
   function fazerLogin() { if(window._fazerLogin) window._fazerLogin(); }
   function fazerCadastro() { if(window._fazerCadastro) window._fazerCadastro(); }
   function mostrarTela(id) { if(window._mostrarTela) window._mostrarTela(id); }
-  function toggleCheck(el) {
-    if (window._toggleCheck) {
-      window._toggleCheck(el);
-    } else {
-      let tentativas = 0;
-      const intervalo = setInterval(function() {
-        tentativas++;
-        if (window._toggleCheck) {
-          clearInterval(intervalo);
-          window._toggleCheck(el);
-        } else if (tentativas >= 20) {
-          clearInterval(intervalo);
-        }
-      }, 150);
-    }
-  }
+  function toggleCheck(el) { if(window._toggleCheck) window._toggleCheck(el); }
   function ajustarAgua(d) { if(window._ajustarAgua) window._ajustarAgua(d); }
   function irParaAba(a) { if(window._irParaAba) window._irParaAba(a); }
   function abrirWppLoja() { if(window._abrirWppLoja) window._abrirWppLoja(); }
@@ -2765,7 +2751,18 @@
   function regSelRef(el) { if(window._regSelRef) window._regSelRef(el); }
   function regSalvarManual() { if(window._regSalvarManual) window._regSalvarManual(); }
   function regVoltarManual() { if(window._regVoltarManual) window._regVoltarManual(); }
-  function evoToggleForm() { if(window._evoToggleForm) window._evoToggleForm(); }
+  function evoToggleForm() {
+    if (window._evoToggleForm) {
+      window._evoToggleForm();
+    } else {
+      let t = 0;
+      const iv = setInterval(function() {
+        t++;
+        if (window._evoToggleForm) { clearInterval(iv); window._evoToggleForm(); }
+        else if (t >= 20) clearInterval(iv);
+      }, 150);
+    }
+  }
   function evoSalvarRegistro() { if(window._evoSalvarRegistro) window._evoSalvarRegistro(); }
   function evoMudarGrafico(t) { if(window._evoMudarGrafico) window._evoMudarGrafico(t); }
   function evoDeletar(id) { if(window._evoDeletar) window._evoDeletar(id); }
@@ -3027,8 +3024,13 @@
     for (const [k, v] of Object.entries(posItems)) {
       if (checkState[k]) pts += v;
     }
-    // Agua: +5 por copo, máximo 8 copos (40 pts)
-    pts += Math.min(qtdCopos, 8) * 5;
+    // Agua: +5 por copo, meta 8. Abaixo da meta desconta.
+    if (qtdCopos >= 8) {
+      pts += 40; // 8 * 5
+    } else {
+      pts += qtdCopos * 5;
+      pts -= (8 - qtdCopos) * 5;
+    }
     if (checkState['doce']) pts -= 10;
     if (checkState['alcool']) pts -= 15;
     if (checkState['fritura']) pts -= 10;
@@ -3053,7 +3055,6 @@
   function toggleCheck(el) {
     const key = el.dataset.key;
     if (!key) return;
-    _ultimaInteracaoChecklist = Date.now();
     el.classList.toggle('done');
     checkState[key] = el.classList.contains('done');
     atualizarPontosUI();
@@ -3061,7 +3062,6 @@
   }
 
   function ajustarAgua(delta) {
-    _ultimaInteracaoChecklist = Date.now();
     qtdCopos = Math.max(0, Math.min(12, qtdCopos + delta));
     const el = document.getElementById('agua-count');
     if (el) el.textContent = qtdCopos;
@@ -3102,10 +3102,7 @@
     } catch(e) { /* silencioso */ }
   }
 
-  let _ultimaInteracaoChecklist = 0;
   async function carregarChecklistFirebase(uid) {
-    // Não recarrega se houve interação nos últimos 5 segundos
-    if (Date.now() - _ultimaInteracaoChecklist < 5000) return;
     const hoje = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
     const hojeStr = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0') + '-' + String(hoje.getDate()).padStart(2,'0');
     try {
