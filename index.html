@@ -2188,8 +2188,8 @@
 
     <div class="reg-body">
       <div class="reg-tabs">
-        <button class="reg-tab active" id="regtab-foto" onclick="regMudarTab('foto')">Foto do prato</button>
-        <button class="reg-tab" id="regtab-manual" onclick="regMudarTab('manual')">Adicionar manual</button>
+        <button class="reg-tab" id="regtab-foto" onclick="regMudarTab('foto')" style="display:none">Foto do prato</button>
+        <button class="reg-tab active" id="regtab-manual" onclick="regMudarTab('manual')">Adicionar manual</button>
         <button class="reg-tab" id="regtab-dia" onclick="regMudarTab('dia')">Meu dia</button>
       </div>
 
@@ -2466,6 +2466,7 @@
     <div class="duvidas-topbar fade-up">
       <div class="duvidas-topbar-title">Minhas <em>Duvidas</em></div>
       <div class="duvidas-topbar-sub">Pergunte sobre alimentação e nutrição</div>
+      <div style="margin-top:10px;background:#FFF3CD;border-radius:8px;padding:10px 14px;font-size:12px;color:#856404;text-align:center;">Em breve disponível</div>
     </div>
 
     <!-- Área do chat -->
@@ -4178,8 +4179,6 @@ Posso confirmar? 😊`;
   }
 
   async function adminBioAnalisarFoto(base64) {
-    alert('Em breve disponível');
-    return null;
     const prompt = `Voce e um especialista em leitura de balanças de bioimpedancia. Analise esta foto da balança e extraia todos os valores numericos visiveis. Responda SOMENTE com JSON valido neste formato exato, sem texto adicional, sem explicacoes, sem markdown. Use null para campos que nao estiverem visiveis na foto: {"data":"${horaBrasilia().toISOString().split('T')[0]}","peso":null,"muscular":null,"gordakg":null,"gordapct":null,"visceral":null,"aguapct":null,"imc":null,"idadecorpo":null,"bmr":null}`;
     try {
       const resp = await fetch('/api/gemini', {
@@ -4397,8 +4396,6 @@ Posso confirmar? 😊`;
   }
 
   async function regAnalisarFoto(base64) {
-    alert('Em breve disponível');
-    return null;
     const refeicao = regDetectarRefeicao();
     const prompt = `Voce e um nutricionista. Analise esta foto de prato. Identifique os alimentos visiveis com quantidades estimadas em gramas. Calcule o total de calorias e macronutrientes. Responda SOMENTE com JSON valido neste formato exato, sem texto adicional, sem explicacoes: {"refeicao":"${refeicao}","totalKcal":487,"proteina":38,"carboidrato":52,"gordura":12,"alimentos":[{"nome":"Frango grelhado","qtd":"150g"}]}`;
     try {
@@ -4426,8 +4423,6 @@ Posso confirmar? 😊`;
   }
 
   async function regAnalisarTexto(texto, refeicao) {
-    alert('Em breve disponível');
-    return null;
     const prompt = `Voce e um nutricionista. O paciente descreveu: "${texto}". Refeicao: ${refeicao}. Identifique os alimentos e calcule calorias e macros. Responda SOMENTE com JSON valido neste formato, sem texto adicional: {"refeicao":"${refeicao}","totalKcal":400,"proteina":30,"carboidrato":40,"gordura":10,"alimentos":[{"nome":"Alimento","qtd":"100g"}]}`;
     try {
       const resp = await fetch('/api/gemini', {
@@ -4744,8 +4739,6 @@ Posso confirmar? 😊`;
   let duvidaHistorico = [];
 
   async function duvidaEnviar() {
-    duvidaAdicionarBolha('ia', 'Em breve disponível');
-    return;
     const input = document.getElementById('duvidas-input');
     const texto = input?.value?.trim();
     if (!texto) return;
