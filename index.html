@@ -2770,7 +2770,7 @@
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, addDoc, collection, serverTimestamp, query, onSnapshot, orderBy, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
+  const GEMINI_KEY = "AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4";
     apiKey: "AIzaSyA0i4xXtM2MxvpwPros8ML2-nC4RIXMgNA",
     authDomain: "metodo-talita-codogni.firebaseapp.com",
     projectId: "metodo-talita-codogni",
@@ -4185,7 +4185,7 @@ Posso confirmar? 😊`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'gemini-2.0-flash',
-          payload: { contents: [{ parts: [
+          contents: [{ parts: [
             { inline_data: { mime_type: 'image/jpeg', data: base64 } },
             { text: prompt }
           ]}] }
@@ -4403,7 +4403,7 @@ Posso confirmar? 😊`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'gemini-2.0-flash',
-          payload: {
+          contents: [{ parts: [
             contents: [{ parts: [
               { inline_data: { mime_type: 'image/jpeg', data: base64 } },
               { text: prompt }
@@ -4429,7 +4429,7 @@ Posso confirmar? 😊`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'gemini-2.0-flash',
-          payload: { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1, maxOutputTokens: 1000 } }
+          contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1, maxOutputTokens: 1000 } }
         })
       });
       const d = await resp.json();
@@ -4772,7 +4772,7 @@ Posso confirmar? 😊`;
       const resp = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'gemini-2.0-flash', payload: { contents: geminiContents } })
+        body: JSON.stringify({ model: 'gemini-2.0-flash', contents: [{ parts: [ contents: geminiContents } })
       });
       const d = await resp.json();
       const resposta = d.candidates?.[0]?.content?.parts?.[0]?.text || 'Nao consegui processar sua pergunta. Tente novamente.';
