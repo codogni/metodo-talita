@@ -1806,8 +1806,8 @@
             <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </div>
           <div>
-            <div class="quick-label">Registro Alimentar</div>
-            <div class="quick-sub">Recordatório 24h</div>
+            <div class="quick-label">Foto do Prato</div>
+            <div class="quick-sub">Analise com IA</div>
           </div>
         </div>
 
@@ -2182,14 +2182,14 @@
 <div id="screen-registrar" class="screen">
   <div class="reg-wrap">
     <div class="reg-topbar fade-up">
-      <div class="reg-topbar-title">Registro <em>Alimentar</em></div>
+      <div class="reg-topbar-title">Foto do <em>Prato</em></div>
       <div class="reg-topbar-sub">Registre suas refeicoes do dia</div>
     </div>
 
     <div class="reg-body">
       <div class="reg-tabs">
         <button class="reg-tab active" id="regtab-foto" onclick="regMudarTab('foto')">Foto do prato</button>
-        <button class="reg-tab active" id="regtab-manual" onclick="regMudarTab('manual')">Recordatório 24h</button>
+        <button class="reg-tab" id="regtab-manual" onclick="regMudarTab('manual')">Adicionar manual</button>
         <button class="reg-tab" id="regtab-dia" onclick="regMudarTab('dia')">Meu dia</button>
       </div>
 
@@ -2751,18 +2751,7 @@
   function regSelRef(el) { if(window._regSelRef) window._regSelRef(el); }
   function regSalvarManual() { if(window._regSalvarManual) window._regSalvarManual(); }
   function regVoltarManual() { if(window._regVoltarManual) window._regVoltarManual(); }
-  function evoToggleForm() {
-    if (window._evoToggleForm) {
-      window._evoToggleForm();
-    } else {
-      let t = 0;
-      const iv = setInterval(function() {
-        t++;
-        if (window._evoToggleForm) { clearInterval(iv); window._evoToggleForm(); }
-        else if (t >= 20) clearInterval(iv);
-      }, 150);
-    }
-  }
+  function evoToggleForm() { if(window._evoToggleForm) window._evoToggleForm(); }
   function evoSalvarRegistro() { if(window._evoSalvarRegistro) window._evoSalvarRegistro(); }
   function evoMudarGrafico(t) { if(window._evoMudarGrafico) window._evoMudarGrafico(t); }
   function evoDeletar(id) { if(window._evoDeletar) window._evoDeletar(id); }
@@ -4886,6 +4875,10 @@ Posso confirmar? 😊`;
   window._enviarWhatsApp = enviarWhatsApp;
   window._enviarWhatsAppDireto = enviarWhatsAppDireto;
   window._salvarGerenciar = salvarGerenciar;
+  window._evoToggleForm = evoToggleForm;
+  window._evoSalvarRegistro = evoSalvarRegistro;
+  window._evoMudarGrafico = evoMudarGrafico;
+  window._evoDeletar = evoDeletar;
 
   window.perfilEditarCampo = perfilEditarCampo;
   window.perfilCancelarEdit = perfilCancelarEdit;
