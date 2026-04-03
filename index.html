@@ -2719,7 +2719,23 @@
   function fazerLogin() { if(window._fazerLogin) window._fazerLogin(); }
   function fazerCadastro() { if(window._fazerCadastro) window._fazerCadastro(); }
   function mostrarTela(id) { if(window._mostrarTela) window._mostrarTela(id); }
-  function toggleCheck(el) { if(window._toggleCheck) { window._toggleCheck(el); } else { setTimeout(function(){ if(window._toggleCheck) window._toggleCheck(el); }, 300); } }
+  function toggleCheck(el) {
+    if (window._toggleCheck) {
+      window._toggleCheck(el);
+    } else {
+      // Módulo ainda carregando — tenta até 10x com intervalo de 200ms
+      let tentativas = 0;
+      const intervalo = setInterval(function() {
+        tentativas++;
+        if (window._toggleCheck) {
+          clearInterval(intervalo);
+          window._toggleCheck(el);
+        } else if (tentativas >= 10) {
+          clearInterval(intervalo);
+        }
+      }, 200);
+    }
+  }
   function ajustarAgua(d) { if(window._ajustarAgua) window._ajustarAgua(d); }
   function irParaAba(a) { if(window._irParaAba) window._irParaAba(a); }
   function abrirWppLoja() { if(window._abrirWppLoja) window._abrirWppLoja(); }
