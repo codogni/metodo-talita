@@ -3027,13 +3027,8 @@
     for (const [k, v] of Object.entries(posItems)) {
       if (checkState[k]) pts += v;
     }
-    // Agua: +5 por copo, meta 8. Abaixo da meta desconta.
-    if (qtdCopos >= 8) {
-      pts += 40; // 8 * 5
-    } else {
-      pts += qtdCopos * 5;
-      pts -= (8 - qtdCopos) * 5;
-    }
+    // Agua: +5 por copo, máximo 8 copos (40 pts)
+    pts += Math.min(qtdCopos, 8) * 5;
     if (checkState['doce']) pts -= 10;
     if (checkState['alcool']) pts -= 15;
     if (checkState['fritura']) pts -= 10;
@@ -3058,6 +3053,7 @@
   function toggleCheck(el) {
     const key = el.dataset.key;
     if (!key) return;
+    _ultimaInteracaoChecklist = Date.now();
     el.classList.toggle('done');
     checkState[key] = el.classList.contains('done');
     atualizarPontosUI();
@@ -3065,6 +3061,7 @@
   }
 
   function ajustarAgua(delta) {
+    _ultimaInteracaoChecklist = Date.now();
     qtdCopos = Math.max(0, Math.min(12, qtdCopos + delta));
     const el = document.getElementById('agua-count');
     if (el) el.textContent = qtdCopos;
@@ -3105,7 +3102,10 @@
     } catch(e) { /* silencioso */ }
   }
 
+  let _ultimaInteracaoChecklist = 0;
   async function carregarChecklistFirebase(uid) {
+    // Não recarrega se houve interação nos últimos 5 segundos
+    if (Date.now() - _ultimaInteracaoChecklist < 5000) return;
     const hoje = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
     const hojeStr = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0') + '-' + String(hoje.getDate()).padStart(2,'0');
     try {
