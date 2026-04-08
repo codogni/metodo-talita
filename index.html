@@ -1806,8 +1806,8 @@
             <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </div>
           <div>
-            <div class="quick-label">Registro Alimentar</div>
-            <div class="quick-sub">Recordatório 24h</div>
+            <div class="quick-label">Foto do Prato</div>
+            <div class="quick-sub">Analise com IA</div>
           </div>
         </div>
 
@@ -1822,7 +1822,16 @@
         </div>
       </div>
 
-
+      <!-- Frase do dia -->
+      <div class="frase-card fade-up-5">
+        <div class="frase-icone">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div>
+          <div class="frase-label">Frase do dia</div>
+          <div class="frase-texto" id="frase-do-dia">Carregando...</div>
+        </div>
+      </div>
 
       <!-- Pontos da semana -->
       <div class="pontos-card fade-up-5">
@@ -2173,19 +2182,19 @@
 <div id="screen-registrar" class="screen">
   <div class="reg-wrap">
     <div class="reg-topbar fade-up">
-      <div class="reg-topbar-title">Registro <em>Alimentar</em></div>
+      <div class="reg-topbar-title">Foto do <em>Prato</em></div>
       <div class="reg-topbar-sub">Registre suas refeicoes do dia</div>
     </div>
 
     <div class="reg-body">
       <div class="reg-tabs">
-        <button class="reg-tab" id="regtab-foto" onclick="regMudarTab('foto')" style="display:none">Foto do prato</button>
-        <button class="reg-tab active" id="regtab-manual" onclick="regMudarTab('manual')">Recordatório 24h</button>
+        <button class="reg-tab active" id="regtab-foto" onclick="regMudarTab('foto')">Foto do prato</button>
+        <button class="reg-tab" id="regtab-manual" onclick="regMudarTab('manual')">Adicionar manual</button>
         <button class="reg-tab" id="regtab-dia" onclick="regMudarTab('dia')">Meu dia</button>
       </div>
 
       <!-- PAINEL FOTO -->
-      <div id="reg-painel-foto" style="display:none">
+      <div id="reg-painel-foto">
         <div id="reg-estado-upload" class="reg-upload-zone">
           <div class="reg-upload-area" onclick="regSimularAnalise()">
             <div class="reg-upload-icon">
@@ -2232,14 +2241,7 @@
       </div>
 
       <!-- PAINEL MANUAL -->
-      <div id="reg-painel-manual">
-        <div style="background:linear-gradient(135deg,#4A6358,#6B8F7A);border-radius:12px;padding:14px 16px;margin:16px 16px 0;display:flex;align-items:center;gap:12px;">
-          <div style="font-size:22px;">💚</div>
-          <div>
-            <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px;">Frase do dia</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:14px;color:#fff;line-height:1.5;" id="frase-do-dia">Carregando...</div>
-          </div>
-        </div>
+      <div id="reg-painel-manual" style="display:none;">
         <div id="reg-manual-form" class="reg-manual-card">
           <div class="reg-manual-titulo">Adicionar refeicao</div>
           <div class="reg-manual-sub">Descreva o que comeu com o nome e a quantidade de cada alimento.</div>
@@ -2464,7 +2466,6 @@
     <div class="duvidas-topbar fade-up">
       <div class="duvidas-topbar-title">Minhas <em>Duvidas</em></div>
       <div class="duvidas-topbar-sub">Pergunte sobre alimentação e nutrição</div>
-      <div style="margin-top:10px;background:#FFF3CD;border-radius:8px;padding:10px 14px;font-size:12px;color:#856404;text-align:center;font-weight:500;">Em breve disponível</div>
     </div>
 
     <!-- Área do chat -->
@@ -2532,7 +2533,6 @@
       <button class="adm-tab active" id="tab-pendentes" onclick="adminMudarAba('pendentes')">Pendentes <span id="badge-pendentes" style="background:var(--gold);color:#fff;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">0</span></button>
       <button class="adm-tab" id="tab-ativas" onclick="adminMudarAba('ativas')">Ativas e Pausadas <span id="badge-ativas" style="background:rgba(0,0,0,0.08);color:var(--text-soft);border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">0</span></button>
       <button class="adm-tab" id="tab-agenda" onclick="adminMudarAba('agenda')">Agenda</button>
-      <button class="adm-tab" id="tab-aniversarios" onclick="adminMudarAba('aniversarios')">🎂 Aniversários</button>
     </div>
     <div style="flex:1;padding:18px 16px;overflow-y:auto;">
       <!-- Enviar hoje -->
@@ -2547,9 +2547,6 @@
       </div>
       <div id="lista-pendentes"></div>
       <div id="lista-ativas" style="display:none;"></div>
-
-      <!-- ANIVERSÁRIOS -->
-      <div id="lista-aniversarios-admin" style="display:none;"></div>
 
       <!-- AGENDA -->
       <div id="lista-agenda-admin" style="display:none;">
@@ -2614,12 +2611,6 @@
         <div><div style="font-size:10px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.07em;">Sexo</div><div style="font-size:13px;font-weight:500;" id="modal-sexo"></div></div>
       </div>
 
-      <!-- Data de nascimento -->
-      <div style="display:flex;flex-direction:column;gap:6px;">
-        <label style="font-size:11px;font-weight:700;color:var(--sage);text-transform:uppercase;letter-spacing:0.08em;">Data de nascimento</label>
-        <input type="date" id="modal-nascimento" class="form-input" style="padding:10px 14px;" />
-      </div>
-
       <!-- Tipo de atendimento -->
       <div style="display:flex;flex-direction:column;gap:6px;">
         <label style="font-size:11px;font-weight:700;color:var(--sage);text-transform:uppercase;letter-spacing:0.08em;">Tipo de atendimento</label>
@@ -2647,14 +2638,6 @@
           <input type="date" id="nova-data" class="form-input" style="padding:10px 12px;" />
           <input type="time" id="nova-hora" class="form-input" value="08:00" style="padding:10px 12px;" />
         </div>
-        <select id="nova-tipo-consulta" class="form-input" style="padding:10px 14px;appearance:none;">
-          <option value="">Selecionar tipo...</option>
-          <option value="primeira">Primeira consulta</option>
-          <option value="mensal">Consulta mensal</option>
-          <option value="consulta">Consulta</option>
-          <option value="quinzenal">Retorno quinzenal</option>
-          <option value="semanal">Retorno semanal</option>
-        </select>
         <button onclick="adicionarConsulta()" style="width:100%;padding:10px;background:var(--sage-pale);color:var(--sage);border:1.5px dashed var(--sage-light);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">+ Adicionar data</button>
       </div>
 
@@ -2738,15 +2721,7 @@
   function fazerLogin() { if(window._fazerLogin) window._fazerLogin(); }
   function fazerCadastro() { if(window._fazerCadastro) window._fazerCadastro(); }
   function mostrarTela(id) { if(window._mostrarTela) window._mostrarTela(id); }
-  function toggleCheck(el) {
-    if (window._toggleCheck) { window._toggleCheck(el); return; }
-    let t = 0;
-    const iv = setInterval(function() {
-      t++;
-      if (window._toggleCheck) { clearInterval(iv); window._toggleCheck(el); }
-      else if (t >= 20) clearInterval(iv);
-    }, 150);
-  }
+  function toggleCheck(el) { if(window._toggleCheck) window._toggleCheck(el); }
   function ajustarAgua(d) { if(window._ajustarAgua) window._ajustarAgua(d); }
   function irParaAba(a) { if(window._irParaAba) window._irParaAba(a); }
   function abrirWppLoja() { if(window._abrirWppLoja) window._abrirWppLoja(); }
@@ -2795,7 +2770,7 @@
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, addDoc, collection, serverTimestamp, query, onSnapshot, orderBy, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
+  const GEMINI_KEY = "AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4";
     apiKey: "AIzaSyA0i4xXtM2MxvpwPros8ML2-nC4RIXMgNA",
     authDomain: "metodo-talita-codogni.firebaseapp.com",
     projectId: "metodo-talita-codogni",
@@ -3038,7 +3013,13 @@
     for (const [k, v] of Object.entries(posItems)) {
       if (checkState[k]) pts += v;
     }
-    pts += Math.min(qtdCopos, 8) * 5; // +5 por copo, max 8 copos
+    // Agua: +5 por copo, meta 8. Abaixo da meta desconta.
+    if (qtdCopos >= 8) {
+      pts += 40; // 8 * 5
+    } else {
+      pts += qtdCopos * 5;
+      pts -= (8 - qtdCopos) * 5;
+    }
     if (checkState['doce']) pts -= 10;
     if (checkState['alcool']) pts -= 15;
     if (checkState['fritura']) pts -= 10;
@@ -3063,7 +3044,6 @@
   function toggleCheck(el) {
     const key = el.dataset.key;
     if (!key) return;
-    _ultimaInteracaoChecklist = Date.now();
     el.classList.toggle('done');
     checkState[key] = el.classList.contains('done');
     atualizarPontosUI();
@@ -3071,7 +3051,6 @@
   }
 
   function ajustarAgua(delta) {
-    _ultimaInteracaoChecklist = Date.now();
     qtdCopos = Math.max(0, Math.min(12, qtdCopos + delta));
     const el = document.getElementById('agua-count');
     if (el) el.textContent = qtdCopos;
@@ -3112,9 +3091,7 @@
     } catch(e) { /* silencioso */ }
   }
 
-  let _ultimaInteracaoChecklist = 0;
   async function carregarChecklistFirebase(uid) {
-    if (Date.now() - _ultimaInteracaoChecklist < 5000) return;
     const hoje = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
     const hojeStr = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0') + '-' + String(hoje.getDate()).padStart(2,'0');
     try {
@@ -3364,7 +3341,6 @@
     document.getElementById('lista-pendentes').style.display = aba === 'pendentes' ? '' : 'none';
     document.getElementById('lista-ativas').style.display = aba === 'ativas' ? '' : 'none';
     document.getElementById('lista-agenda-admin').style.display = aba === 'agenda' ? '' : 'none';
-    document.getElementById('lista-aniversarios-admin').style.display = aba === 'aniversarios' ? '' : 'none';
     // Busca e frase do dia só ficam visíveis fora da aba agenda
     const buscaWrap = document.querySelector('#admin-busca')?.parentElement;
     const enviarWrap = document.getElementById('enviar-hoje-wrap');
@@ -3372,69 +3348,10 @@
       if (buscaWrap) buscaWrap.style.display = 'none';
       if (enviarWrap) enviarWrap.style.display = 'none';
       renderAgendaAdmin();
-    } else if (aba === 'aniversarios') {
-      if (buscaWrap) buscaWrap.style.display = 'none';
-      if (enviarWrap) enviarWrap.style.display = 'none';
-      renderAniversariantes();
     } else {
       if (buscaWrap) buscaWrap.style.display = '';
       renderLista();
     }
-  }
-
-  // ─── ANIVERSARIANTES ─────────────────────────────────────────────────────
-  function renderAniversariantes() {
-    const el = document.getElementById('lista-aniversarios-admin');
-    if (!el) return;
-    const agora = horaBrasilia();
-    const mesAtual = agora.getMonth();
-    const diaAtual = agora.getDate();
-    const nomeMes = agora.toLocaleDateString('pt-BR', { month: 'long' });
-
-    const aniversariantes = todosOsPacientes
-      .filter(p => p.dataNascimento && p.status === 'ativa')
-      .map(p => {
-        const [ano, mes, dia] = p.dataNascimento.split('-').map(Number);
-        return { ...p, mesNasc: mes - 1, diaNasc: dia, anoNasc: ano };
-      })
-      .filter(p => p.mesNasc === mesAtual)
-      .sort((a, b) => a.diaNasc - b.diaNasc);
-
-    if (aniversariantes.length === 0) {
-      el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--text-soft);">
-        <div style="font-size:40px;margin-bottom:12px;">🎂</div>
-        <div style="font-size:15px;">Nenhum aniversariante em ${nomeMes}</div>
-        <div style="font-size:12px;margin-top:6px;">Cadastre a data de nascimento das pacientes para ver aqui.</div>
-      </div>`;
-      return;
-    }
-
-    el.innerHTML = `
-      <div style="font-size:11px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">🎂 Aniversariantes de ${nomeMes}</div>
-      ${aniversariantes.map(p => {
-        const jaPassou = p.diaNasc < diaAtual;
-        const hoje = p.diaNasc === diaAtual;
-        const idade = agora.getFullYear() - p.anoNasc;
-        const nome = p.nome || 'Paciente';
-        const tel = (p.telefone || '').replace(/\D/g, '');
-        const primeiroNome = nome.split(' ')[0];
-        const msgAniversario = `Oi, ${primeiroNome}! 🎂🎉\nHoje é um dia especial e não poderia deixar passar!\nDesejo um feliz aniversário cheio de saúde, alegria e conquistas!\nQue esse novo ciclo seja incrível para você! 🥳💚\n\nCom carinho,\nNutricionista Talita Codogni - CRN 34022`;
-        const urlWpp = `https://wa.me/55${tel}?text=${encodeURIComponent(msgAniversario)}`;
-        const badge = hoje
-          ? '<span style="background:#A85A5A;color:#fff;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;">🎉 Hoje!</span>'
-          : jaPassou
-          ? '<span style="background:var(--cream-dark);color:var(--text-soft);border-radius:20px;padding:2px 10px;font-size:11px;">Passou</span>'
-          : `<span style="background:var(--sage-pale);color:var(--sage);border-radius:20px;padding:2px 10px;font-size:11px;">dia ${p.diaNasc}</span>`;
-        return `<div style="background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,0.06);display:flex;align-items:center;gap:12px;">
-          <div style="width:42px;height:42px;border-radius:50%;background:${hoje ? '#A85A5A' : 'var(--sage)'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${hoje ? '🎂' : '🎈'}</div>
-          <div style="flex:1;">
-            <div style="font-size:14px;font-weight:600;color:var(--text);">${nome}</div>
-            <div style="font-size:12px;color:var(--text-soft);">dia ${p.diaNasc} · ${idade} anos ${badge}</div>
-          </div>
-          ${tel ? `<a href="${urlWpp}" target="_blank" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px;white-space:nowrap;">💬 Parabéns</a>` : ''}
-        </div>`;
-      }).join('')}
-    `;
   }
 
   // ─── AGENDA ADMIN ────────────────────────────────────────────────────────
@@ -3743,7 +3660,6 @@
     document.getElementById('modal-wpp').textContent = p.telefone || '—';
     document.getElementById('modal-status').textContent = p.status === 'ativa' ? '🟢 Ativa' : '🟡 Pausada';
     document.getElementById('modal-sexo').textContent = p.sexo === 'masculino' ? '♂ Masculino' : p.sexo === 'feminino' ? '♀ Feminino' : '—';
-    document.getElementById('modal-nascimento').value = p.dataNascimento || '';
     document.getElementById('modal-tipo').value = p.tipoAtendimento || '';
     document.getElementById('modal-pdf-link').value = p.menuPdfUrl || '';
     document.getElementById('modal-subs').value = p.substituicoes || '';
@@ -3805,42 +3721,24 @@
       else if (dias === 1) alertaHtml = '<span style="color:var(--gold);font-size:11px;font-weight:700;">🟡 Amanhã</span>';
       else if (dias === 2) alertaHtml = '<span style="color:var(--sage);font-size:11px;">em 2 dias</span>';
       else if (dias === 3) alertaHtml = '<span style="color:var(--text-soft);font-size:11px;">em 3 dias</span>';
-      const tipo = c.tipoConsulta || '';
-      const sel = (v) => tipo === v ? 'selected' : '';
-      return `<div class="agenda-item" style="flex-direction:column;align-items:stretch;gap:8px;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="flex:1;">
-            <div style="font-size:13px;font-weight:500;">${dataFmt} às ${c.hora||'—'}</div>
-            <div style="margin-top:2px;">${alertaHtml}</div>
-          </div>
-          <button class="btn-wpp" onclick="enviarWhatsApp(${i})" style="flex-shrink:0;">💬 WhatsApp</button>
-          <button onclick="removerConsulta(${i})" style="background:none;border:none;color:var(--text-soft);font-size:16px;cursor:pointer;padding:4px;flex-shrink:0;">×</button>
+      const tipo = document.getElementById('modal-tipo')?.value || pacienteAtual?.tipoAtendimento || '';
+      const podeMsgWpp = dias >= 0 && dias <= 1;
+      return `<div class="agenda-item">
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:500;">${dataFmt} às ${c.hora||'—'}</div>
+          <div style="margin-top:2px;">${alertaHtml}</div>
         </div>
-        <select onchange="alterarTipoConsulta(${i}, this.value)" style="width:100%;padding:8px 12px;border:1.5px solid var(--cream-dark);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:#fff;appearance:none;">
-          <option value="" ${sel('')}>Selecionar tipo...</option>
-          <option value="primeira" ${sel('primeira')}>Primeira consulta</option>
-          <option value="mensal" ${sel('mensal')}>Consulta mensal</option>
-          <option value="consulta" ${sel('consulta')}>Consulta</option>
-          <option value="quinzenal" ${sel('quinzenal')}>Retorno quinzenal</option>
-          <option value="semanal" ${sel('semanal')}>Retorno semanal</option>
-        </select>
+        ${podeMsgWpp || true ? `<button class="btn-wpp" onclick="enviarWhatsApp(${i})">💬 WhatsApp</button>` : ''}
+        <button onclick="removerConsulta(${i})" style="background:none;border:none;color:var(--text-soft);font-size:16px;cursor:pointer;padding:4px;flex-shrink:0;">×</button>
       </div>`;
     }).join('');
-  }
-
-  function alterarTipoConsulta(idx, tipo) {
-    const sorted = [...agendaTemp].sort((a,b) => new Date(a.data+'T'+a.hora) - new Date(b.data+'T'+b.hora));
-    const item = sorted[idx];
-    const original = agendaTemp.find(c => c.data === item.data && c.hora === item.hora);
-    if (original) original.tipoConsulta = tipo;
   }
 
   function adicionarConsulta() {
     const data = document.getElementById('nova-data').value;
     const hora = document.getElementById('nova-hora').value;
-    const tipo = document.getElementById('nova-tipo-consulta').value;
     if (!data) { showToast('Selecione uma data'); return; }
-    agendaTemp.push({ data, hora: hora || '08:00', tipoConsulta: tipo });
+    agendaTemp.push({ data, hora: hora || '08:00' });
     document.getElementById('nova-data').value = '';
     renderAgenda();
   }
@@ -3856,7 +3754,7 @@
     if (!pacienteAtual) return;
     const sorted = [...agendaTemp].sort((a,b) => new Date(a.data+'T'+a.hora) - new Date(b.data+'T'+b.hora));
     const c = sorted[idx];
-    const tipo = c.tipoConsulta || document.getElementById('modal-tipo').value || pacienteAtual.tipoAtendimento || '';
+    const tipo = document.getElementById('modal-tipo').value || pacienteAtual.tipoAtendimento || '';
     const nome = pacienteAtual.nome ? pacienteAtual.nome.split(' ')[0] : '';
     const hora = c.hora || '';
     let msg = '';
@@ -3986,7 +3884,6 @@ Posso confirmar? 😊`;
     btn.textContent = 'Salvando...'; btn.disabled = true;
     try {
       const updates = {
-        dataNascimento: document.getElementById('modal-nascimento').value,
         tipoAtendimento: document.getElementById('modal-tipo').value,
         consultas: agendaTemp,
         updatedAt: serverTimestamp(),
@@ -4288,7 +4185,7 @@ Posso confirmar? 😊`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'gemini-2.0-flash',
-          payload: { contents: [{ parts: [
+          contents: [{ parts: [
             { inline_data: { mime_type: 'image/jpeg', data: base64 } },
             { text: prompt }
           ]}] }
@@ -4506,17 +4403,15 @@ Posso confirmar? 😊`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'gemini-2.0-flash',
-          payload: {
-            contents: [{ parts: [
-              { inline_data: { mime_type: 'image/jpeg', data: base64 } },
-              { text: prompt }
-            ]}],
-            generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
-          }
+          contents: [{ parts: [
+            { inline_data: { mime_type: 'image/jpeg', data: base64 } },
+            { text: prompt }
+          ]}],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
         })
       });
       const d = await resp.json();
-      if (d.error) { console.error('Gemini erro:', d.error); return null; }
+      if (d.error) { console.error('IA foto erro:', d.error); return null; }
       const texto = (d.candidates?.[0]?.content?.parts?.[0]?.text || '').replace(/```json|```/g,'').trim();
       if (!texto) { return null; }
       const match = texto.match(/\{[\s\S]*\}/);
@@ -4532,7 +4427,8 @@ Posso confirmar? 😊`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'gemini-2.0-flash',
-          payload: { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1, maxOutputTokens: 1000 } }
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
         })
       });
       const d = await resp.json();
@@ -4875,7 +4771,7 @@ Posso confirmar? 😊`;
       const resp = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'gemini-2.0-flash', payload: { contents: geminiContents } })
+        body: JSON.stringify({ model: 'gemini-2.0-flash', contents: geminiContents })
       });
       const d = await resp.json();
       const resposta = d.candidates?.[0]?.content?.parts?.[0]?.text || 'Nao consegui processar sua pergunta. Tente novamente.';
@@ -4978,10 +4874,6 @@ Posso confirmar? 😊`;
   window._enviarWhatsApp = enviarWhatsApp;
   window._enviarWhatsAppDireto = enviarWhatsAppDireto;
   window._salvarGerenciar = salvarGerenciar;
-  window._evoToggleForm = evoToggleForm;
-  window._evoSalvarRegistro = evoSalvarRegistro;
-  window._evoMudarGrafico = evoMudarGrafico;
-  window._evoDeletar = evoDeletar;
 
   window.perfilEditarCampo = perfilEditarCampo;
   window.perfilCancelarEdit = perfilCancelarEdit;
