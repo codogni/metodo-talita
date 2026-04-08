@@ -2648,9 +2648,10 @@
           <input type="time" id="nova-hora" class="form-input" value="08:00" style="padding:10px 12px;" />
         </div>
         <select id="nova-tipo-consulta" class="form-input" style="padding:10px 14px;appearance:none;">
-          <option value="">Tipo (opcional)</option>
-          <option value="avulsa">Consulta avulsa</option>
+          <option value="">Selecionar tipo...</option>
           <option value="primeira">Primeira consulta</option>
+          <option value="mensal">Consulta mensal</option>
+          <option value="consulta">Consulta</option>
           <option value="quinzenal">Retorno quinzenal</option>
           <option value="semanal">Retorno semanal</option>
         </select>
@@ -3817,8 +3818,9 @@
         </div>
         <select onchange="alterarTipoConsulta(${i}, this.value)" style="width:100%;padding:8px 12px;border:1.5px solid var(--cream-dark);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:#fff;appearance:none;">
           <option value="" ${sel('')}>Selecionar tipo...</option>
-          <option value="avulsa" ${sel('avulsa')}>Consulta avulsa</option>
           <option value="primeira" ${sel('primeira')}>Primeira consulta</option>
+          <option value="mensal" ${sel('mensal')}>Consulta mensal</option>
+          <option value="consulta" ${sel('consulta')}>Consulta</option>
           <option value="quinzenal" ${sel('quinzenal')}>Retorno quinzenal</option>
           <option value="semanal" ${sel('semanal')}>Retorno semanal</option>
         </select>
