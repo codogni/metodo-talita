@@ -2532,6 +2532,7 @@
       <button class="adm-tab active" id="tab-pendentes" onclick="adminMudarAba('pendentes')">Pendentes <span id="badge-pendentes" style="background:var(--gold);color:#fff;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">0</span></button>
       <button class="adm-tab" id="tab-ativas" onclick="adminMudarAba('ativas')">Ativas e Pausadas <span id="badge-ativas" style="background:rgba(0,0,0,0.08);color:var(--text-soft);border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">0</span></button>
       <button class="adm-tab" id="tab-agenda" onclick="adminMudarAba('agenda')">Agenda</button>
+      <button class="adm-tab" id="tab-aniversarios" onclick="adminMudarAba('aniversarios')">🎂 Aniversários</button>
     </div>
     <div style="flex:1;padding:18px 16px;overflow-y:auto;">
       <!-- Enviar hoje -->
@@ -2546,6 +2547,9 @@
       </div>
       <div id="lista-pendentes"></div>
       <div id="lista-ativas" style="display:none;"></div>
+
+      <!-- ANIVERSÁRIOS -->
+      <div id="lista-aniversarios-admin" style="display:none;"></div>
 
       <!-- AGENDA -->
       <div id="lista-agenda-admin" style="display:none;">
@@ -2610,6 +2614,12 @@
         <div><div style="font-size:10px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.07em;">Sexo</div><div style="font-size:13px;font-weight:500;" id="modal-sexo"></div></div>
       </div>
 
+      <!-- Data de nascimento -->
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-size:11px;font-weight:700;color:var(--sage);text-transform:uppercase;letter-spacing:0.08em;">Data de nascimento</label>
+        <input type="date" id="modal-nascimento" class="form-input" style="padding:10px 14px;" />
+      </div>
+
       <!-- Tipo de atendimento -->
       <div style="display:flex;flex-direction:column;gap:6px;">
         <label style="font-size:11px;font-weight:700;color:var(--sage);text-transform:uppercase;letter-spacing:0.08em;">Tipo de atendimento</label>
@@ -2637,6 +2647,13 @@
           <input type="date" id="nova-data" class="form-input" style="padding:10px 12px;" />
           <input type="time" id="nova-hora" class="form-input" value="08:00" style="padding:10px 12px;" />
         </div>
+        <select id="nova-tipo-consulta" class="form-input" style="padding:10px 14px;appearance:none;">
+          <option value="">Tipo (opcional)</option>
+          <option value="avulsa">Consulta avulsa</option>
+          <option value="primeira">Primeira consulta</option>
+          <option value="quinzenal">Retorno quinzenal</option>
+          <option value="semanal">Retorno semanal</option>
+        </select>
         <button onclick="adicionarConsulta()" style="width:100%;padding:10px;background:var(--sage-pale);color:var(--sage);border:1.5px dashed var(--sage-light);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">+ Adicionar data</button>
       </div>
 
@@ -3346,6 +3363,7 @@
     document.getElementById('lista-pendentes').style.display = aba === 'pendentes' ? '' : 'none';
     document.getElementById('lista-ativas').style.display = aba === 'ativas' ? '' : 'none';
     document.getElementById('lista-agenda-admin').style.display = aba === 'agenda' ? '' : 'none';
+    document.getElementById('lista-aniversarios-admin').style.display = aba === 'aniversarios' ? '' : 'none';
     // Busca e frase do dia só ficam visíveis fora da aba agenda
     const buscaWrap = document.querySelector('#admin-busca')?.parentElement;
     const enviarWrap = document.getElementById('enviar-hoje-wrap');
@@ -3353,10 +3371,69 @@
       if (buscaWrap) buscaWrap.style.display = 'none';
       if (enviarWrap) enviarWrap.style.display = 'none';
       renderAgendaAdmin();
+    } else if (aba === 'aniversarios') {
+      if (buscaWrap) buscaWrap.style.display = 'none';
+      if (enviarWrap) enviarWrap.style.display = 'none';
+      renderAniversariantes();
     } else {
       if (buscaWrap) buscaWrap.style.display = '';
       renderLista();
     }
+  }
+
+  // ─── ANIVERSARIANTES ─────────────────────────────────────────────────────
+  function renderAniversariantes() {
+    const el = document.getElementById('lista-aniversarios-admin');
+    if (!el) return;
+    const agora = horaBrasilia();
+    const mesAtual = agora.getMonth();
+    const diaAtual = agora.getDate();
+    const nomeMes = agora.toLocaleDateString('pt-BR', { month: 'long' });
+
+    const aniversariantes = todosOsPacientes
+      .filter(p => p.dataNascimento && p.status === 'ativa')
+      .map(p => {
+        const [ano, mes, dia] = p.dataNascimento.split('-').map(Number);
+        return { ...p, mesNasc: mes - 1, diaNasc: dia, anoNasc: ano };
+      })
+      .filter(p => p.mesNasc === mesAtual)
+      .sort((a, b) => a.diaNasc - b.diaNasc);
+
+    if (aniversariantes.length === 0) {
+      el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--text-soft);">
+        <div style="font-size:40px;margin-bottom:12px;">🎂</div>
+        <div style="font-size:15px;">Nenhum aniversariante em ${nomeMes}</div>
+        <div style="font-size:12px;margin-top:6px;">Cadastre a data de nascimento das pacientes para ver aqui.</div>
+      </div>`;
+      return;
+    }
+
+    el.innerHTML = `
+      <div style="font-size:11px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">🎂 Aniversariantes de ${nomeMes}</div>
+      ${aniversariantes.map(p => {
+        const jaPassou = p.diaNasc < diaAtual;
+        const hoje = p.diaNasc === diaAtual;
+        const idade = agora.getFullYear() - p.anoNasc;
+        const nome = p.nome || 'Paciente';
+        const tel = (p.telefone || '').replace(/\D/g, '');
+        const primeiroNome = nome.split(' ')[0];
+        const msgAniversario = `Oi, ${primeiroNome}! 🎂🎉\nHoje é um dia especial e não poderia deixar passar!\nDesejo um feliz aniversário cheio de saúde, alegria e conquistas!\nQue esse novo ciclo seja incrível para você! 🥳💚\n\nCom carinho,\nNutricionista Talita Codogni - CRN 34022`;
+        const urlWpp = `https://wa.me/55${tel}?text=${encodeURIComponent(msgAniversario)}`;
+        const badge = hoje
+          ? '<span style="background:#A85A5A;color:#fff;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;">🎉 Hoje!</span>'
+          : jaPassou
+          ? '<span style="background:var(--cream-dark);color:var(--text-soft);border-radius:20px;padding:2px 10px;font-size:11px;">Passou</span>'
+          : `<span style="background:var(--sage-pale);color:var(--sage);border-radius:20px;padding:2px 10px;font-size:11px;">dia ${p.diaNasc}</span>`;
+        return `<div style="background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,0.06);display:flex;align-items:center;gap:12px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:${hoje ? '#A85A5A' : 'var(--sage)'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${hoje ? '🎂' : '🎈'}</div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;color:var(--text);">${nome}</div>
+            <div style="font-size:12px;color:var(--text-soft);">dia ${p.diaNasc} · ${idade} anos ${badge}</div>
+          </div>
+          ${tel ? `<a href="${urlWpp}" target="_blank" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px;white-space:nowrap;">💬 Parabéns</a>` : ''}
+        </div>`;
+      }).join('')}
+    `;
   }
 
   // ─── AGENDA ADMIN ────────────────────────────────────────────────────────
@@ -3665,6 +3742,7 @@
     document.getElementById('modal-wpp').textContent = p.telefone || '—';
     document.getElementById('modal-status').textContent = p.status === 'ativa' ? '🟢 Ativa' : '🟡 Pausada';
     document.getElementById('modal-sexo').textContent = p.sexo === 'masculino' ? '♂ Masculino' : p.sexo === 'feminino' ? '♀ Feminino' : '—';
+    document.getElementById('modal-nascimento').value = p.dataNascimento || '';
     document.getElementById('modal-tipo').value = p.tipoAtendimento || '';
     document.getElementById('modal-pdf-link').value = p.menuPdfUrl || '';
     document.getElementById('modal-subs').value = p.substituicoes || '';
@@ -3726,24 +3804,41 @@
       else if (dias === 1) alertaHtml = '<span style="color:var(--gold);font-size:11px;font-weight:700;">🟡 Amanhã</span>';
       else if (dias === 2) alertaHtml = '<span style="color:var(--sage);font-size:11px;">em 2 dias</span>';
       else if (dias === 3) alertaHtml = '<span style="color:var(--text-soft);font-size:11px;">em 3 dias</span>';
-      const tipo = document.getElementById('modal-tipo')?.value || pacienteAtual?.tipoAtendimento || '';
-      const podeMsgWpp = dias >= 0 && dias <= 1;
-      return `<div class="agenda-item">
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:500;">${dataFmt} às ${c.hora||'—'}</div>
-          <div style="margin-top:2px;">${alertaHtml}</div>
+      const tipo = c.tipoConsulta || '';
+      const sel = (v) => tipo === v ? 'selected' : '';
+      return `<div class="agenda-item" style="flex-direction:column;align-items:stretch;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:500;">${dataFmt} às ${c.hora||'—'}</div>
+            <div style="margin-top:2px;">${alertaHtml}</div>
+          </div>
+          <button class="btn-wpp" onclick="enviarWhatsApp(${i})" style="flex-shrink:0;">💬 WhatsApp</button>
+          <button onclick="removerConsulta(${i})" style="background:none;border:none;color:var(--text-soft);font-size:16px;cursor:pointer;padding:4px;flex-shrink:0;">×</button>
         </div>
-        ${podeMsgWpp || true ? `<button class="btn-wpp" onclick="enviarWhatsApp(${i})">💬 WhatsApp</button>` : ''}
-        <button onclick="removerConsulta(${i})" style="background:none;border:none;color:var(--text-soft);font-size:16px;cursor:pointer;padding:4px;flex-shrink:0;">×</button>
+        <select onchange="alterarTipoConsulta(${i}, this.value)" style="width:100%;padding:8px 12px;border:1.5px solid var(--cream-dark);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:#fff;appearance:none;">
+          <option value="" ${sel('')}>Selecionar tipo...</option>
+          <option value="avulsa" ${sel('avulsa')}>Consulta avulsa</option>
+          <option value="primeira" ${sel('primeira')}>Primeira consulta</option>
+          <option value="quinzenal" ${sel('quinzenal')}>Retorno quinzenal</option>
+          <option value="semanal" ${sel('semanal')}>Retorno semanal</option>
+        </select>
       </div>`;
     }).join('');
+  }
+
+  function alterarTipoConsulta(idx, tipo) {
+    const sorted = [...agendaTemp].sort((a,b) => new Date(a.data+'T'+a.hora) - new Date(b.data+'T'+b.hora));
+    const item = sorted[idx];
+    const original = agendaTemp.find(c => c.data === item.data && c.hora === item.hora);
+    if (original) original.tipoConsulta = tipo;
   }
 
   function adicionarConsulta() {
     const data = document.getElementById('nova-data').value;
     const hora = document.getElementById('nova-hora').value;
+    const tipo = document.getElementById('nova-tipo-consulta').value;
     if (!data) { showToast('Selecione uma data'); return; }
-    agendaTemp.push({ data, hora: hora || '08:00' });
+    agendaTemp.push({ data, hora: hora || '08:00', tipoConsulta: tipo });
     document.getElementById('nova-data').value = '';
     renderAgenda();
   }
@@ -3759,7 +3854,7 @@
     if (!pacienteAtual) return;
     const sorted = [...agendaTemp].sort((a,b) => new Date(a.data+'T'+a.hora) - new Date(b.data+'T'+b.hora));
     const c = sorted[idx];
-    const tipo = document.getElementById('modal-tipo').value || pacienteAtual.tipoAtendimento || '';
+    const tipo = c.tipoConsulta || document.getElementById('modal-tipo').value || pacienteAtual.tipoAtendimento || '';
     const nome = pacienteAtual.nome ? pacienteAtual.nome.split(' ')[0] : '';
     const hora = c.hora || '';
     let msg = '';
@@ -3889,6 +3984,7 @@ Posso confirmar? 😊`;
     btn.textContent = 'Salvando...'; btn.disabled = true;
     try {
       const updates = {
+        dataNascimento: document.getElementById('modal-nascimento').value,
         tipoAtendimento: document.getElementById('modal-tipo').value,
         consultas: agendaTemp,
         updatedAt: serverTimestamp(),
