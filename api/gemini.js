@@ -1,116 +1,76 @@
-const https = require("https");
+// api/gemini.js — Vercel Serverless Function
+// Texto e Chat: Groq (grátis, llama-3.3-70b)
+// Imagem: desabilitado temporariamente (OpenRouter instável)
 
-const GROQ_KEY = "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";
-
-function httpsPost(hostname, path, headers, data) {
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify(data);
-    const req = https.request({
-      hostname,
-      path,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Content-Length": Buffer.byteLength(body),
-        ...headers
-      }
-    }, (res) => {
-      let raw = "";
-      res.on("data", chunk => raw += chunk);
-      res.on("end", () => resolve(raw));
-    });
-    req.on("error", reject);
-    req.write(body);
-    req.end();
-  });
-}
-
-function geminiContentsParaGroq(contents, systemPrompt) {
-  const messages = [];
-  if (systemPrompt) {
-    messages.push({ role: "system", content: systemPrompt });
-  }
-  for (const msg of contents) {
-    const role = msg.role === "model" ? "assistant" : "user";
-    const text = msg.parts?.map(p => p.text || "").join("") || "";
-    if (text.trim()) {
-      messages.push({ role, content: text });
-    }
-  }
-  return messages;
-}
-
-module.exports = async (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Content-Type", "application/json");
-
-  if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  try {
-    const { payload } = req.body;
-    const contents = payload?.contents || [];
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'GROQ_API_KEY não configurada na Vercel' });
+  }
 
-    const temImagem = contents.some(c =>
-      c.parts?.some(p => p.inline_data)
-    );
+  const { contents } = req.body;
 
-    if (temImagem) {
-      res.status(400).json({
-        error: "Chamadas com imagem devem usar Gemini direto do browser."
-      });
-      return;
-    }
+  // Detecta se tem imagem
+  const temImagem = contents?.some(c =>
+    c.parts?.some(p => p.inline_data)
+  );
 
-    const temHistorico = contents.some(c => c.role === "model");
-
-    let messages;
-
-    if (temHistorico) {
-      const systemText = contents[0]?.parts?.[0]?.text || "";
-      const restante = contents.slice(2);
-      messages = geminiContentsParaGroq(restante, systemText);
-    } else {
-      const texto = contents[0]?.parts?.[0]?.text || "";
-      messages = [{ role: "user", content: texto }];
-    }
-
-    const groqPayload = {
-      model: "llama-3.3-70b-versatile",
-      messages,
-      temperature: 0.3,
-      max_tokens: 1000
-    };
-
-    const raw = await httpsPost(
-      "api.groq.com",
-      "/openai/v1/chat/completions",
-      { "Authorization": `Bearer ${GROQ_KEY}` },
-      groqPayload
-    );
-
-    const groqData = JSON.parse(raw);
-
-    if (groqData.error) {
-      res.status(500).json({ error: groqData.error });
-      return;
-    }
-
-    const textoResposta = groqData.choices?.[0]?.message?.content || "";
-    const geminiCompativel = {
+  // Se tiver imagem, retorna mensagem amigável por enquanto
+  if (temImagem) {
+    return res.status(200).json({
       candidates: [{
         content: {
-          parts: [{ text: textoResposta }]
+          parts: [{ text: 'A análise por foto está temporariamente indisponível. Por favor, descreva os dados manualmente.' }]
         }
       }]
-    };
-
-    res.status(200).json(geminiCompativel);
-
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+    });
   }
-};
+
+  // Converte formato Gemini → formato OpenAI (que o Groq usa)
+  const messages = contents.map(c => ({
+    role: c.role === 'model' ? 'assistant' : 'user',
+    content: c.parts.map(p => p.text || '').join('')
+  }));
+
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages,
+        max_tokens: 1024,
+        temperature: 0.7
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Groq erro:', data);
+      return res.status(response.status).json({
+        error: data.error?.message || 'Erro no Groq'
+      });
+    }
+
+    // Converte resposta Groq → formato Gemini (que o index.html espera)
+    const texto = data.choices?.[0]?.message?.content || '';
+    return res.status(200).json({
+      candidates: [{ content: { parts: [{ text: texto }] } }]
+    });
+
+  } catch (error) {
+    console.error('Erro Groq:', error);
+    return res.status(500).json({
+      error: 'Erro interno',
+      detail: error.message
+    });
+  }
+}
