@@ -2065,7 +2065,7 @@
             <div><span class="evo-card-val" id="evo-r-idade">--</span><span class="evo-card-unit"> anos</span></div>
           </div>
           <div class="evo-card">
-            <div class="evo-card-lbl">BMR</div>
+            <div class="evo-card-lbl">Gord. Subcut.</div>
             <div><span class="evo-card-val" id="evo-r-bmr">--</span><span class="evo-card-unit"> kcal</span></div>
           </div>
         </div>
@@ -2140,8 +2140,8 @@
               <input type="number" step="1" id="evo-idadecorpo" class="evo-fi" placeholder="Ex: 34" />
             </div>
             <div class="evo-fg evo-fg-full">
-              <label class="evo-fl">BMR (kcal/dia)</label>
-              <input type="number" step="1" id="evo-bmr" class="evo-fi" placeholder="Ex: 1450" />
+              <label class="evo-fl">Gordura subcutanea (mm)</label>
+              <input type="number" step="1" id="evo-bmr" class="evo-fi" placeholder="Ex: 15" />
             </div>
           </div>
           <button class="evo-btn-salvar" onclick="evoSalvarRegistro()">Salvar medicao</button>
@@ -3990,7 +3990,7 @@ Posso confirmar? 😊`;
           ${r.muscular != null ? `<span class="evo-hist-chip">Musc: <strong>${r.muscular}kg</strong></span>` : ''}
           ${r.imc != null ? `<span class="evo-hist-chip">IMC: <strong>${r.imc}</strong></span>` : ''}
           ${r.visceral != null ? `<span class="evo-hist-chip">Visc: <strong>${r.visceral}</strong></span>` : ''}
-          ${r.bmr != null ? `<span class="evo-hist-chip">BMR: <strong>${r.bmr}kcal</strong></span>` : ''}
+          ${r.subcutanea != null ? `<span class="evo-hist-chip">Gord. Subcut.: <strong>${r.subcutanea}mm</strong></span>` : ''}
         </div>
         <button class="evo-hist-del" onclick="evoDeletar('${r.id}')">×</button>
       </div>`;
@@ -4205,13 +4205,13 @@ Posso confirmar? 😊`;
   function adminBioMostrarPreview(dados) {
     const campos = [
       { key: 'peso',       lbl: 'Peso',             unit: 'kg'   },
-      { key: 'gordapct',   lbl: 'Gordura',           unit: '%'    },
+      { key: 'gordapct',   lbl: 'Gordura',           unit: 'kg'    },
       { key: 'muscular',   lbl: 'Massa muscular',    unit: 'kg'   },
       { key: 'visceral',   lbl: 'Gordura visceral',  unit: ''     },
-      { key: 'aguapct',    lbl: 'Agua corporal',     unit: '%'    },
+      { key: 'aguapct',    lbl: 'Agua corporal',     unit: 'kg'    },
       { key: 'imc',        lbl: 'IMC',               unit: ''     },
       { key: 'idadecorpo', lbl: 'Idade do corpo',    unit: 'anos' },
-      { key: 'bmr',        lbl: 'BMR',               unit: 'kcal' },
+      { key: 'bmr',        lbl: 'Gordura subcutanea',               unit: 'kcal' },
       { key: 'gordakg',    lbl: 'Massa gorda',       unit: 'kg'   },
     ];
     const visiveis = campos.filter(c => dados[c.key] != null);
