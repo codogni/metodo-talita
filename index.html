@@ -4771,7 +4771,7 @@ Posso confirmar? 😊`;
       const resp = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'gemini-2.0-flash', contents: geminiContents })  
+        body: JSON.stringify({ model: 'gemini-2.0-flash', contents: geminiContents })   
       });
       const d = await resp.json();
       const resposta = d.candidates?.[0]?.content?.parts?.[0]?.text || 'Nao consegui processar sua pergunta. Tente novamente.';
