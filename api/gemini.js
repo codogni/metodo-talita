@@ -1,38 +1,23 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
-  
-  const body = req.body;
-  let text = '';
-  
   try {
-    // Tenta extrair o texto de qualquer formato que vier
-    const contents = body.contents || body.messages || [];
-    const msgs = [];
-    
-    for (const c of contents) {
-      const role = c.role === 'model' ? 'assistant' : 'user';
-      let content = '';
-      if (c.parts) content = c.parts.map(p => p.text || '').join('');
-      else if (c.content) content = c.content;
-      else if (typeof c === 'string') content = c;
-      if (content) msgs.push({ role, content });
-    }
-    
-    if (msgs.length === 0) {
-      return res.status(200).json({ candidates: [{ content: { parts: [{ text: 'Tente novamente.' }] } }] });
-    }
-    
+    const contents = req.body.contents || [];
+    const messages = contents.map(c => ({
+      role: c.role === 'model' ? 'assistant' : 'user',
+      content: Array.isArray(c.parts) ? c.parts.map(p => p.text || '').join('') : ''
+    })).filter(m => m.content);
     const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.GROQ_API_KEY}` },
-      body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: msgs, max_tokens: 1024 })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
+      },
+      body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages, max_tokens: 1024 })
     });
-    
     const d = await r.json();
-    text = d.choices?.[0]?.message?.content || 'Tente novamente.';
+    const text = d.choices?.[0]?.message?.content || '';
+    res.status(200).json({ candidates: [{ content: { parts: [{ text }] } }] });
   } catch(e) {
-    text = 'Tente novamente.';
+    res.status(500).json({ error: e.message });
   }
-  
-  res.status(200).json({ candidates: [{ content: { parts: [{ text }] } }] });
 }
