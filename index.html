@@ -3760,19 +3760,18 @@
     const nome = pacienteAtual.nome ? pacienteAtual.nome.split(' ')[0] : '';
     const hora = c.hora || '';
     let msg = '';
-    const emoji = '🥰';
     const d2 = new Date(c.data + 'T12:00:00');
     const diaFmt = d2.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
     if (tipo === 'primeira') {
-      msg = 'Bom dia, ' + nome + '! ' + emoji + '\nAqui é a Talita, sua nutricionista. Estou te esperando na ' + diaFmt + ' às ' + hora + ' e mal posso esperar para te conhecer! Já vou deixar tudo preparado com carinho para você. Caso não possa comparecer avisar com antecedência ou a consulta será cobrada.\nTenha um bom dia e até amanhã!\n\nNutricionista Talita Codogni - CRN 34022\n\nPosso confirmar?';
+      msg = 'Bom dia, ' + nome + '!\nAqui é a Talita, sua nutricionista. Estou te esperando na ' + diaFmt + ' às ' + hora + ' e mal posso esperar para te conhecer! Já vou deixar tudo preparado com carinho para você. Caso não possa comparecer avisar com antecedência ou a consulta será cobrada.\nTenha um bom dia e até amanhã!\n\nNutricionista Talita Codogni - CRN 34022\n\nPosso confirmar?';
     } else if (tipo === 'consulta') {
-      msg = 'Bom dia, ' + nome + '! ' + emoji + '\nPassando para lembrar da nossa consulta AMANHÃ às ' + hora + '.\nCaso não possa comparecer avisar com antecedência ou a consulta será cobrada.\nTenha um bom dia e até amanhã!\n\nNutricionista Talita Codogni - CRN 34022\n\nPosso confirmar?';
+      msg = 'Bom dia, ' + nome + '!\nPassando para lembrar da nossa consulta AMANHÃ às ' + hora + '.\nCaso não possa comparecer avisar com antecedência ou a consulta será cobrada.\nTenha um bom dia e até amanhã!\n\nNutricionista Talita Codogni - CRN 34022\n\nPosso confirmar?';
     } else if (tipo === 'quinzenal') {
-      msg = 'Bom dia, ' + nome + '! ' + emoji + '\nNão esqueça do nosso retorno AMANHÃ às ' + hora + '.\nCaso não possa comparecer o retorno *NÃO* poderá ser remarcado, pois ele é quinzenal *após a consulta fechada no pacote.*\nTenha um bom dia e até amanhã!\n\nNutricionista Talita Codogni - CRN 34022\n\nPosso confirmar?';
+      msg = 'Bom dia, ' + nome + '!\nNão esqueça do nosso retorno AMANHÃ às ' + hora + '.\nCaso não possa comparecer o retorno *NÃO* poderá ser remarcado, pois ele é quinzenal *após a consulta fechada no pacote.*\nTenha um bom dia e até amanhã!\n\nNutricionista Talita Codogni - CRN 34022\n\nPosso confirmar?';
     } else if (tipo === 'semanal') {
-      msg = 'Bom dia, ' + nome + '! ' + emoji + '\nNão esqueça do nosso retorno AMANHÃ às ' + hora + '.\nCaso não possa comparecer o retorno *NÃO* poderá ser remarcado, pois ele é semanal *após a consulta fechada no pacote.*\nTenha um bom dia!\n\nNutricionista Talita Codogni - CRN 34022\n\nPosso confirmar?';
+      msg = 'Bom dia, ' + nome + '!\nNão esqueça do nosso retorno AMANHÃ às ' + hora + '.\nCaso não possa comparecer o retorno *NÃO* poderá ser remarcado, pois ele é semanal *após a consulta fechada no pacote.*\nTenha um bom dia!\n\nNutricionista Talita Codogni - CRN 34022\n\nPosso confirmar?';
     } else {
-      msg = 'Bom dia, ' + nome + '! ' + emoji + '\nPassando para lembrar da nossa consulta AMANHÃ às ' + hora + '.\nTenha um bom dia e até amanhã!\n\nNutricionista Talita Codogni - CRN 34022\n\nPosso confirmar?';
+      msg = 'Bom dia, ' + nome + '!\nPassando para lembrar da nossa consulta AMANHÃ às ' + hora + '.\nTenha um bom dia e até amanhã!\n\nNutricionista Talita Codogni - CRN 34022\n\nPosso confirmar?';
     }
     const tel = (pacienteAtual.telefone || '').replace(/\D/g,'');
     const url = 'https://wa.me/55' + tel + '?text=' + encodeURIComponent(msg);
