@@ -2056,18 +2056,12 @@
             <div class="evo-card-lbl">IMC</div>
             <div><span class="evo-card-val" id="evo-r-imc">--</span></div>
           </div>
-          <div class="evo-card">
-            <div class="evo-card-lbl">Agua corporal</div>
-            <div><span class="evo-card-val" id="evo-r-agua">--</span><span class="evo-card-unit"> %</span></div>
-          </div>
+
           <div class="evo-card">
             <div class="evo-card-lbl">Idade do corpo</div>
             <div><span class="evo-card-val" id="evo-r-idade">--</span><span class="evo-card-unit"> anos</span></div>
           </div>
-          <div class="evo-card">
-            <div class="evo-card-lbl">BMR</div>
-            <div><span class="evo-card-val" id="evo-r-bmr">--</span><span class="evo-card-unit"> kcal</span></div>
-          </div>
+
         </div>
       </div>
 
@@ -2079,6 +2073,7 @@
             <button class="evo-ctab active" id="ectab-peso" onclick="evoMudarGrafico('peso')">Peso</button>
             <button class="evo-ctab" id="ectab-gordura" onclick="evoMudarGrafico('gordura')">Gordura</button>
             <button class="evo-ctab" id="ectab-muscular" onclick="evoMudarGrafico('muscular')">Muscular</button>
+            <button class="evo-ctab" id="ectab-imc" onclick="evoMudarGrafico('imc')">IMC</button>
           </div>
         </div>
         <div class="evo-chart-wrap">
@@ -4013,6 +4008,9 @@ Posso confirmar? 😊`;
     } else if (evoGrafico === 'gordura') {
       dados = evoRegistros.map(r => r.gordapct != null ? parseFloat(r.gordapct) : null);
       cor = '#C9963A'; unidade = '%';
+    } else if (evoGrafico === 'imc') {
+      dados = evoRegistros.map(r => r.imc != null ? parseFloat(r.imc) : null);
+      cor = '#8B6B8A'; unidade = '';
     } else {
       dados = evoRegistros.map(r => r.muscular != null ? parseFloat(r.muscular) : null);
       cor = '#6B8A7A'; unidade = 'kg';
@@ -4075,7 +4073,7 @@ Posso confirmar? 😊`;
 
   function evoMudarGrafico(tipo) {
     evoGrafico = tipo;
-    ['peso','gordura','muscular'].forEach(t => {
+    ['peso','gordura','muscular','imc'].forEach(t => {
       document.getElementById('ectab-' + t)?.classList.toggle('active', t === tipo);
     });
     renderGrafico();
