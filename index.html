@@ -4183,7 +4183,7 @@ Posso confirmar? 😊`;
   }
 
   async function adminBioAnalisarFoto(base64) {
-    const prompt = `Voce e um especialista em leitura de balanças de bioimpedancia. Analise esta foto da balança e extraia todos os valores numericos visiveis. Responda SOMENTE com JSON valido neste formato exato, sem texto adicional, sem explicacoes, sem markdown. Use null para campos que nao estiverem visiveis na foto: {"data":"${horaBrasilia().toISOString().split('T')[0]}","peso":null,"muscular":null,"gordakg":null,"gordapct":null,"visceral":null,"aguapct":null,"imc":null,"idadecorpo":null,"bmr":null}`;
+    const prompt = `Voce e um especialista em bioimpedancia. Analise esta foto de relatorio de balanca de bioimpedancia com muito cuidado. INSTRUCOES IMPORTANTES: O campo PESO total do corpo geralmente aparece como o maior numero em kg no topo ou centro do relatorio (ex: 80kg, 90kg, 114kg). O BMR ou ingestao calorica recomendada e um numero alto em kcal (ex: 1800kcal, 2200kcal). A gordura percentual aparece como porcentagem (ex: 29%, 46%). A massa muscular em kg e menor que o peso total. Nao confunda valores entre si. Responda SOMENTE com JSON valido neste formato exato, sem texto, sem markdown: {"data":"${horaBrasilia().toISOString().split('T')[0]}","peso":null,"muscular":null,"gordakg":null,"gordapct":null,"visceral":null,"aguapct":null,"imc":null,"idadecorpo":null,"bmr":null}`;
     try {
       const resp = await fetch('/api/gemini', {
         method: 'POST',
