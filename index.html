@@ -4149,7 +4149,6 @@ Posso confirmar? 😊`;
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.capture = 'environment';
     input.onchange = async (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -4183,7 +4182,7 @@ Posso confirmar? 😊`;
   }
 
   async function adminBioAnalisarFoto(base64) {
-    const prompt = `Voce e um especialista em bioimpedancia. Analise esta foto de relatorio de balanca de bioimpedancia com muito cuidado. INSTRUCOES IMPORTANTES: O campo PESO total do corpo geralmente aparece como o maior numero em kg no topo ou centro do relatorio (ex: 80kg, 90kg, 114kg). O BMR ou ingestao calorica recomendada e um numero alto em kcal (ex: 1800kcal, 2200kcal). A gordura percentual aparece como porcentagem (ex: 29%, 46%). A massa muscular em kg e menor que o peso total. Nao confunda valores entre si. Responda SOMENTE com JSON valido neste formato exato, sem texto, sem markdown: {"data":"${horaBrasilia().toISOString().split('T')[0]}","peso":null,"muscular":null,"gordakg":null,"gordapct":null,"visceral":null,"aguapct":null,"imc":null,"idadecorpo":null,"bmr":null}`;
+    const prompt = `Voce e um especialista em bioimpedancia. Analise esta foto de relatorio de balanca com muito cuidado. Identifique cada campo pelo seu ROTULO na foto, nao pelo valor. CAMPOS: 1) peso: numero em kg no campo rotulado Peso, geralmente o maior valor destacado no topo (ex: 114). 2) muscular: kg no campo rotulado Massa muscular esqueletica (ex: 34.9). 3) gordakg: kg no campo rotulado Massa gorda (ex: 52). 4) gordapct: porcentagem no campo rotulado Relacao de gordura (ex: 46.3). 5) visceral: numero inteiro no campo rotulado Gordura visceral (ex: 23). 6) aguapct: valor no campo rotulado Agua corporal total (ex: 45.4). 7) imc: decimal no campo rotulado IMC (ex: 41.7). 8) idadecorpo: anos no campo rotulado Idade do corpo (ex: 40). 9) bmr: kcal no campo rotulado Ingestao calorica recomendada (ex: 2221). Responda SOMENTE com JSON valido sem texto: {"data":"${horaBrasilia().toISOString().split('T')[0]}","peso":null,"muscular":null,"gordakg":null,"gordapct":null,"visceral":null,"aguapct":null,"imc":null,"idadecorpo":null,"bmr":null}`;
     try {
       const resp = await fetch('/api/gemini', {
         method: 'POST',
