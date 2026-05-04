@@ -4136,6 +4136,11 @@ Posso confirmar? 😊`;
     } catch(e) { showToast('Erro ao excluir'); }
   }
 
+  window._evoToggleForm = evoToggleForm;
+  window._evoSalvarRegistro = evoSalvarRegistro;
+  window._evoMudarGrafico = evoMudarGrafico;
+  window._evoDeletar = evoDeletar;
+
   // ─── ADMIN: BIOIMPEDANCIA POR FOTO ──────────────────────────────────────
 
   let _bioDadosPendentes = null;
