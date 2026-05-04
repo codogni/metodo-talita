@@ -2065,7 +2065,7 @@
             <div><span class="evo-card-val" id="evo-r-idade">--</span><span class="evo-card-unit"> anos</span></div>
           </div>
           <div class="evo-card">
-            <div class="evo-card-lbl">Gord. Subcut.</div>
+            <div class="evo-card-lbl">BMR</div>
             <div><span class="evo-card-val" id="evo-r-bmr">--</span><span class="evo-card-unit"> kcal</span></div>
           </div>
         </div>
@@ -2140,8 +2140,8 @@
               <input type="number" step="1" id="evo-idadecorpo" class="evo-fi" placeholder="Ex: 34" />
             </div>
             <div class="evo-fg evo-fg-full">
-              <label class="evo-fl">Gordura subcutanea (mm)</label>
-              <input type="number" step="1" id="evo-bmr" class="evo-fi" placeholder="Ex: 15" />
+              <label class="evo-fl">BMR (kcal/dia)</label>
+              <input type="number" step="1" id="evo-bmr" class="evo-fi" placeholder="Ex: 1450" />
             </div>
           </div>
           <button class="evo-btn-salvar" onclick="evoSalvarRegistro()">Salvar medicao</button>
@@ -2770,7 +2770,7 @@
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, addDoc, collection, serverTimestamp, query, onSnapshot, orderBy, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const GEMINI_KEY = "AIzaSyCz_GkXLZVU24vwdpECFFN1-eI8hwk4jJ4";
+  const firebaseConfig = {
     apiKey: "AIzaSyA0i4xXtM2MxvpwPros8ML2-nC4RIXMgNA",
     authDomain: "metodo-talita-codogni.firebaseapp.com",
     projectId: "metodo-talita-codogni",
@@ -3990,7 +3990,7 @@ Posso confirmar? 😊`;
           ${r.muscular != null ? `<span class="evo-hist-chip">Musc: <strong>${r.muscular}kg</strong></span>` : ''}
           ${r.imc != null ? `<span class="evo-hist-chip">IMC: <strong>${r.imc}</strong></span>` : ''}
           ${r.visceral != null ? `<span class="evo-hist-chip">Visc: <strong>${r.visceral}</strong></span>` : ''}
-          ${r.subcutanea != null ? `<span class="evo-hist-chip">Gord. Subcut.: <strong>${r.subcutanea}mm</strong></span>` : ''}
+          ${r.bmr != null ? `<span class="evo-hist-chip">BMR: <strong>${r.bmr}kcal</strong></span>` : ''}
         </div>
         <button class="evo-hist-del" onclick="evoDeletar('${r.id}')">×</button>
       </div>`;
@@ -4184,11 +4184,10 @@ Posso confirmar? 😊`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'gemini-2.0-flash',
           contents: [{ parts: [
             { inline_data: { mime_type: 'image/jpeg', data: base64 } },
             { text: prompt }
-          ]}] }
+          ]}]
         })
       });
       const d = await resp.json();
@@ -4205,13 +4204,13 @@ Posso confirmar? 😊`;
   function adminBioMostrarPreview(dados) {
     const campos = [
       { key: 'peso',       lbl: 'Peso',             unit: 'kg'   },
-      { key: 'gordapct',   lbl: 'Gordura',           unit: 'kg'    },
+      { key: 'gordapct',   lbl: 'Gordura',           unit: '%'    },
       { key: 'muscular',   lbl: 'Massa muscular',    unit: 'kg'   },
       { key: 'visceral',   lbl: 'Gordura visceral',  unit: ''     },
-      { key: 'aguapct',    lbl: 'Agua corporal',     unit: 'kg'    },
+      { key: 'aguapct',    lbl: 'Agua corporal',     unit: '%'    },
       { key: 'imc',        lbl: 'IMC',               unit: ''     },
       { key: 'idadecorpo', lbl: 'Idade do corpo',    unit: 'anos' },
-      { key: 'bmr',        lbl: 'Gordura subcutanea',               unit: 'kcal' },
+      { key: 'bmr',        lbl: 'BMR',               unit: 'kcal' },
       { key: 'gordakg',    lbl: 'Massa gorda',       unit: 'kg'   },
     ];
     const visiveis = campos.filter(c => dados[c.key] != null);
@@ -4402,16 +4401,14 @@ Posso confirmar? 😊`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'gemini-2.0-flash',
           contents: [{ parts: [
             { inline_data: { mime_type: 'image/jpeg', data: base64 } },
             { text: prompt }
-          ]}],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+          ]}]
         })
       });
       const d = await resp.json();
-      if (d.error) { console.error('IA foto erro:', d.error); return null; }
+      if (d.error) { console.error('Gemini erro:', d.error); return null; }
       const texto = (d.candidates?.[0]?.content?.parts?.[0]?.text || '').replace(/```json|```/g,'').trim();
       if (!texto) { return null; }
       const match = texto.match(/\{[\s\S]*\}/);
@@ -4426,9 +4423,7 @@ Posso confirmar? 😊`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'gemini-2.0-flash',
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+          contents: [{ parts: [{ text: prompt }] }]
         })
       });
       const d = await resp.json();
@@ -4771,7 +4766,7 @@ Posso confirmar? 😊`;
       const resp = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'gemini-2.0-flash', contents: geminiContents })   
+        body: JSON.stringify({ contents: geminiContents })
       });
       const d = await resp.json();
       const resposta = d.candidates?.[0]?.content?.parts?.[0]?.text || 'Nao consegui processar sua pergunta. Tente novamente.';
