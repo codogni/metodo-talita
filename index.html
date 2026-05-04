@@ -4182,7 +4182,7 @@ Posso confirmar? 😊`;
   }
 
   async function adminBioAnalisarFoto(base64) {
-    const prompt = `Voce e um especialista em bioimpedancia. Analise esta foto de relatorio de balanca com muito cuidado. Identifique cada campo pelo seu ROTULO na foto, nao pelo valor. CAMPOS: 1) peso: numero em kg no campo rotulado Peso, geralmente o maior valor destacado no topo (ex: 114). 2) muscular: kg no campo rotulado Massa muscular esqueletica (ex: 34.9). 3) gordakg: kg no campo rotulado Massa gorda (ex: 52). 4) gordapct: porcentagem no campo rotulado Relacao de gordura (ex: 46.3). 5) visceral: numero inteiro no campo rotulado Gordura visceral (ex: 23). 6) aguapct: valor no campo rotulado Agua corporal total (ex: 45.4). 7) imc: decimal no campo rotulado IMC (ex: 41.7). 8) idadecorpo: anos no campo rotulado Idade do corpo (ex: 40). 9) bmr: kcal no campo rotulado Ingestao calorica recomendada (ex: 2221). Responda SOMENTE com JSON valido sem texto: {"data":"${horaBrasilia().toISOString().split('T')[0]}","peso":null,"muscular":null,"gordakg":null,"gordapct":null,"visceral":null,"aguapct":null,"imc":null,"idadecorpo":null,"bmr":null}`;
+    const prompt = `Voce e um especialista em leitura de relatorios de bioimpedancia. Analise esta imagem com extrema atencao. Este relatorio tem MUITOS numeros - leia cada campo APENAS pelo seu rotulo/label escrito ao lado ou acima do valor. REGRAS CRITICAS: - O campo PESO e o numero principal destacado no topo, geralmente dentro de um circulo ou destaque visual grande (ex: 114kg) - NAO use valores de tabelas de referencia para peso - O IMC verdadeiro e calculado pelo peso e altura, para uma pessoa de 114kg e 168cm o IMC seria ~40, nao 26 - A GORDURA VISCERAL e um numero entre 1 e 30, rotulado especificamente como gordura visceral nos outros indicadores - A MASSA MUSCULAR ESQUELETICA e rotulada exatamente assim, geralmente entre 20-50kg - O campo AGUA CORPORAL TOTAL e em kg (ex: 45.4kg), nao confundir com porcentagem - A RELACAO DE GORDURA e em porcentagem (ex: 46.3%) nos outros indicadores - O BMR ou INGESTAO CALORICA RECOMENDADA e um numero alto como 2221kcal/dia - Ignore todos os numeros das tabelas de comparacao (Baixo/Normal/Alto) - use apenas os valores medidos da paciente. Responda SOMENTE com JSON valido sem texto adicional: {"data":"${horaBrasilia().toISOString().split('T')[0]}","peso":null,"muscular":null,"gordakg":null,"gordapct":null,"visceral":null,"aguapct":null,"imc":null,"idadecorpo":null,"bmr":null}`;
     try {
       const resp = await fetch('/api/gemini', {
         method: 'POST',
@@ -4217,15 +4217,19 @@ Posso confirmar? 😊`;
       { key: 'bmr',        lbl: 'BMR',               unit: 'kcal' },
       { key: 'gordakg',    lbl: 'Massa gorda',       unit: 'kg'   },
     ];
-    const visiveis = campos.filter(c => dados[c.key] != null);
     const grid = document.getElementById('bio-preview-grid');
-    grid.innerHTML = visiveis.map(c =>
-      `<div class="bio-preview-item">
-        <div class="bio-preview-lbl">${c.lbl}</div>
-        <div class="bio-preview-val">${dados[c.key]}<span style="font-size:11px;font-weight:400;color:var(--text-soft);margin-left:2px;">${c.unit}</span></div>
+    grid.innerHTML = campos.map(c =>
+      `<div class="bio-preview-item" style="display:flex;flex-direction:column;gap:3px;">
+        <div class="bio-preview-lbl">${c.lbl} <span style="font-size:10px;color:var(--text-soft);">(${c.unit})</span></div>
+        <input type="number" step="0.1"
+          id="bio-edit-${c.key}"
+          value="${dados[c.key] != null ? dados[c.key] : ''}"
+          placeholder="—"
+          oninput="_bioDadosPendentes['${c.key}'] = this.value ? parseFloat(this.value) : null"
+          style="width:100%;padding:6px 8px;border:1px solid var(--cream-dark);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--text-dark);background:var(--cream-light);box-sizing:border-box;" />
       </div>`
     ).join('');
-    if (visiveis.length === 0) {
+    if (campos.length === 0) {
       grid.innerHTML = '<div style="font-size:13px;color:var(--text-soft);grid-column:span 2;">Nenhum valor identificado na imagem.</div>';
     }
     document.getElementById('bio-preview').style.display = '';
