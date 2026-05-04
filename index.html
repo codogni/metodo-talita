@@ -3014,13 +3014,8 @@
     for (const [k, v] of Object.entries(posItems)) {
       if (checkState[k]) pts += v;
     }
-    // Agua: +5 por copo, meta 8. Abaixo da meta desconta.
-    if (qtdCopos >= 8) {
-      pts += 40; // 8 * 5
-    } else {
-      pts += qtdCopos * 5;
-      pts -= (8 - qtdCopos) * 5;
-    }
+    // Agua: +5 por copo ate 8 copos, sem desconto abaixo da meta
+    pts += Math.min(qtdCopos, 8) * 5;
     if (checkState['doce']) pts -= 10;
     if (checkState['alcool']) pts -= 15;
     if (checkState['fritura']) pts -= 10;
