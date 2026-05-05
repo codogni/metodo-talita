@@ -736,10 +736,10 @@
 
     /* ─── ADMIN ─── */
     .adm-tab {
-      padding:14px 16px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:400;
+      padding:12px 10px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:400;
       color:var(--text-soft);border:none;border-bottom:2px solid transparent;
-      background:none;cursor:pointer;display:flex;align-items:center;gap:7px;
-      transition:color 0.2s;white-space:nowrap;
+      background:none;cursor:pointer;display:flex;align-items:center;gap:5px;
+      transition:color 0.2s;white-space:nowrap;flex-shrink:0;
     }
     .adm-tab.active { font-weight:500;color:var(--sage);border-bottom-color:var(--sage); }
     .adm-card {
@@ -2526,11 +2526,11 @@
       </div>
       <button onclick="adminLogout()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 14px;border-radius:20px;cursor:pointer;">Sair</button>
     </div>
-    <div style="display:flex;background:#fff;border-bottom:1px solid var(--cream-dark);padding:0 22px;">
+    <div style="display:flex;background:#fff;border-bottom:1px solid var(--cream-dark);padding:0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
       <button class="adm-tab active" id="tab-pendentes" onclick="adminMudarAba('pendentes')">Pendentes <span id="badge-pendentes" style="background:var(--gold);color:#fff;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">0</span></button>
-      <button class="adm-tab" id="tab-ativas" onclick="adminMudarAba('ativas')">Ativas e Pausadas <span id="badge-ativas" style="background:rgba(0,0,0,0.08);color:var(--text-soft);border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">0</span></button>
+      <button class="adm-tab" id="tab-ativas" onclick="adminMudarAba('ativas')">Ativas <span id="badge-ativas" style="background:rgba(0,0,0,0.08);color:var(--text-soft);border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">0</span></button>
       <button class="adm-tab" id="tab-agenda" onclick="adminMudarAba('agenda')">Agenda</button>
-      <button class="adm-tab" id="tab-aniversarios" onclick="adminMudarAba('aniversarios')">🎂 Aniversários</button>
+      <button class="adm-tab" id="tab-aniversarios" onclick="adminMudarAba('aniversarios')">🎂</button>
     </div>
     <div style="flex:1;padding:18px 16px;overflow-y:auto;">
       <!-- Enviar hoje -->
