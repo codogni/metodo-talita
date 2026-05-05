@@ -1635,13 +1635,13 @@
     <div class="pending-icon fade-up" style="background: #FAEAEA;">
       <svg viewBox="0 0 24 24" style="stroke: #A85A5A;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     </div>
-    <div class="pending-title fade-up-2">Acesso pausado</div>
-    <div class="pending-text fade-up-3">
-      Seu acesso está temporariamente pausado. Agende sua consulta com a Nutri Talita para retomar seu acompanhamento.
+    <div class="pending-title fade-up-2">Sentimos sua falta!</div>
+    <div class="pending-text fade-up-3" id="msg-suspensa">
+      Seu acesso foi pausado pois faz mais de 30 dias sem consulta agendada. Que tal retomar seu acompanhamento? A Nutri Talita está te esperando!
     </div>
-    <button class="btn-primary" style="max-width: 260px; margin-top: 32px;" onclick="agendarConsulta()" class="fade-up-4">
-      Agendar consulta
-    </button>
+    <a href="https://wa.me/5516993987122?text=Oi%20Talita!%20Quero%20retomar%20meu%20acompanhamento%20nutricional!" target="_blank" class="btn-primary" style="max-width:260px;margin-top:32px;display:block;text-align:center;text-decoration:none;">
+      Falar com a Nutri Talita
+    </a>
   </div>
 </div>
 
@@ -2530,6 +2530,7 @@
       <button class="adm-tab active" id="tab-pendentes" onclick="adminMudarAba('pendentes')">Pendentes <span id="badge-pendentes" style="background:var(--gold);color:#fff;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">0</span></button>
       <button class="adm-tab" id="tab-ativas" onclick="adminMudarAba('ativas')">Ativas e Pausadas <span id="badge-ativas" style="background:rgba(0,0,0,0.08);color:var(--text-soft);border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;">0</span></button>
       <button class="adm-tab" id="tab-agenda" onclick="adminMudarAba('agenda')">Agenda</button>
+      <button class="adm-tab" id="tab-aniversarios" onclick="adminMudarAba('aniversarios')">🎂 Aniversários</button>
     </div>
     <div style="flex:1;padding:18px 16px;overflow-y:auto;">
       <!-- Enviar hoje -->
@@ -2544,6 +2545,20 @@
       </div>
       <div id="lista-pendentes"></div>
       <div id="lista-ativas" style="display:none;"></div>
+
+      <!-- ANIVERSÁRIOS -->
+      <div id="lista-aniversarios-admin" style="display:none;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--text);">Aniversariantes</div>
+          <select id="aniv-mes-sel" onchange="anivCarregar()" style="margin-left:auto;padding:6px 10px;border:1.5px solid var(--cream-dark);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;color:var(--text);">
+            <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option>
+            <option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option>
+            <option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option>
+            <option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
+          </select>
+        </div>
+        <div id="aniv-lista"></div>
+      </div>
 
       <!-- AGENDA -->
       <div id="lista-agenda-admin" style="display:none;">
@@ -2606,6 +2621,11 @@
         <div><div style="font-size:10px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.07em;">WhatsApp</div><div style="font-size:13px;font-weight:500;" id="modal-wpp"></div></div>
         <div><div style="font-size:10px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.07em;">Status</div><div style="font-size:13px;font-weight:500;" id="modal-status"></div></div>
         <div><div style="font-size:10px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.07em;">Sexo</div><div style="font-size:13px;font-weight:500;" id="modal-sexo"></div></div>
+      </div>
+      <!-- Data de nascimento -->
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-size:11px;font-weight:700;color:var(--sage);text-transform:uppercase;letter-spacing:0.08em;">Data de nascimento</label>
+        <input type="date" id="modal-nasc" class="form-input" style="padding:10px 14px;" />
       </div>
 
       <!-- Tipo de atendimento -->
@@ -2813,15 +2833,51 @@
     quinzenal: 'Retorno quinzenal'
   };
 
+  async function verificarPausaAutomatica(uid, perfil) {
+    // Só verifica pacientes ativos
+    if (perfil.status !== 'ativa') return perfil.status;
+    const consultas = perfil.consultas || [];
+    const agora = new Date();
+    // Verifica se tem consulta futura
+    const temFutura = consultas.some(c => {
+      const dataConsulta = new Date(c.data + 'T' + (c.hora || '08:00') + ':00');
+      return dataConsulta >= agora;
+    });
+    if (temFutura) return 'ativa';
+    // Verifica se a última consulta foi há menos de 30 dias
+    const passadas = consultas
+      .map(c => new Date(c.data + 'T' + (c.hora || '08:00') + ':00'))
+      .filter(d => d < agora)
+      .sort((a, b) => b - a);
+    if (passadas.length > 0) {
+      const diasDesdeUltima = (agora - passadas[0]) / (1000 * 60 * 60 * 24);
+      if (diasDesdeUltima <= 30) return 'ativa';
+    }
+    // Se chegou aqui, pausa automaticamente
+    try {
+      await updateDoc(doc(db, 'users', uid), { status: 'suspensa' });
+    } catch(e) {}
+    return 'suspensa';
+  }
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       if (user.email === ADMIN_EMAIL) { iniciarAdmin(); return; }
       const perfil = await carregarPerfil(user.uid);
       if (!perfil) return;
       perfil.uid = user.uid;
-      if (perfil.status === 'pendente') mostrarTela('screen-pendente');
-      else if (perfil.status === 'suspensa') mostrarTela('screen-suspensa');
-      else if (perfil.status === 'ativa') carregarHome(perfil);
+      if (perfil.status === 'pendente') {
+        mostrarTela('screen-pendente');
+      } else if (perfil.status === 'suspensa') {
+        mostrarTela('screen-suspensa');
+      } else if (perfil.status === 'ativa') {
+        const statusFinal = await verificarPausaAutomatica(user.uid, perfil);
+        if (statusFinal === 'suspensa') {
+          mostrarTela('screen-suspensa');
+        } else {
+          carregarHome(perfil);
+        }
+      }
     }
   });
 
@@ -3339,17 +3395,60 @@
     document.getElementById('lista-pendentes').style.display = aba === 'pendentes' ? '' : 'none';
     document.getElementById('lista-ativas').style.display = aba === 'ativas' ? '' : 'none';
     document.getElementById('lista-agenda-admin').style.display = aba === 'agenda' ? '' : 'none';
-    // Busca e frase do dia só ficam visíveis fora da aba agenda
+    document.getElementById('lista-aniversarios-admin').style.display = aba === 'aniversarios' ? '' : 'none';
     const buscaWrap = document.querySelector('#admin-busca')?.parentElement;
     const enviarWrap = document.getElementById('enviar-hoje-wrap');
     if (aba === 'agenda') {
       if (buscaWrap) buscaWrap.style.display = 'none';
       if (enviarWrap) enviarWrap.style.display = 'none';
       renderAgendaAdmin();
+    } else if (aba === 'aniversarios') {
+      if (buscaWrap) buscaWrap.style.display = 'none';
+      if (enviarWrap) enviarWrap.style.display = 'none';
+      // Selecionar mês atual
+      const sel = document.getElementById('aniv-mes-sel');
+      if (sel) sel.value = new Date().getMonth();
+      anivCarregar();
     } else {
       if (buscaWrap) buscaWrap.style.display = '';
+      if (enviarWrap) enviarWrap.style.display = '';
       renderLista();
     }
+  }
+
+  function anivCarregar() {
+    const mes = parseInt(document.getElementById('aniv-mes-sel').value);
+    const lista = document.getElementById('aniv-lista');
+    const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const aniversariantes = todosOsPacientes.filter(p => {
+      if (!p.dataNasc) return false;
+      const d = new Date(p.dataNasc + 'T12:00:00');
+      return d.getMonth() === mes;
+    }).sort((a,b) => {
+      const da = new Date(a.dataNasc + 'T12:00:00').getDate();
+      const db = new Date(b.dataNasc + 'T12:00:00').getDate();
+      return da - db;
+    });
+    if (aniversariantes.length === 0) {
+      lista.innerHTML = '<div style="text-align:center;color:var(--text-soft);font-size:14px;padding:32px 0;">Nenhum aniversariante em ' + meses[mes] + '.</div>';
+      return;
+    }
+    lista.innerHTML = aniversariantes.map(p => {
+      const d = new Date(p.dataNasc + 'T12:00:00');
+      const dia = d.getDate();
+      const nome = p.nome || p.email || '—';
+      const inicial = nome.charAt(0).toUpperCase();
+      const tel = (p.telefone || '').replace(/\D/g,'');
+      const msg = encodeURIComponent('Feliz aniversário, ' + nome.split(' ')[0] + '! Que este novo ano seja repleto de saúde, conquistas e alegrias! Um abraço carinhoso da Nutri Talita!');
+      return '<div style="background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">'
+        + '<div style="width:42px;height:42px;border-radius:50%;background:var(--sage-pale);display:flex;align-items:center;justify-content:center;font-family:Cormorant Garamond,serif;font-size:20px;font-weight:600;color:var(--sage);flex-shrink:0;">' + inicial + '</div>'
+        + '<div style="flex:1;">'
+        + '<div style="font-size:14px;font-weight:600;color:var(--text);">' + nome + '</div>'
+        + '<div style="font-size:12px;color:var(--text-soft);margin-top:2px;">Dia ' + dia + ' de ' + meses[mes] + '</div>'
+        + '</div>'
+        + (tel ? '<a href="https://wa.me/55' + tel + '?text=' + msg + '" target="_blank" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:7px 12px;font-family:DM Sans,sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;flex-shrink:0;">WhatsApp</a>' : '')
+        + '</div>';
+    }).join('');
   }
 
   // ─── AGENDA ADMIN ────────────────────────────────────────────────────────
@@ -3906,9 +4005,7 @@ Posso confirmar? 😊`;
     document.getElementById('evo-r-musc').textContent = ult.muscular ?? '--';
     document.getElementById('evo-r-visc').textContent = ult.visceral ?? '--';
     document.getElementById('evo-r-imc').textContent = ult.imc ?? '--';
-    document.getElementById('evo-r-agua').textContent = ult.aguapct ?? '--';
     document.getElementById('evo-r-idade').textContent = ult.idadecorpo ?? '--';
-    document.getElementById('evo-r-bmr').textContent = ult.bmr ?? '--';
 
     if (ult.data) {
       const d = new Date(ult.data + 'T12:00:00');
@@ -4178,10 +4275,8 @@ Posso confirmar? 😊`;
       { key: 'gordapct',   lbl: 'Gordura',           unit: '%'    },
       { key: 'muscular',   lbl: 'Massa muscular',    unit: 'kg'   },
       { key: 'visceral',   lbl: 'Gordura visceral',  unit: ''     },
-      { key: 'aguapct',    lbl: 'Agua corporal',     unit: '%'    },
       { key: 'imc',        lbl: 'IMC',               unit: ''     },
       { key: 'idadecorpo', lbl: 'Idade do corpo',    unit: 'anos' },
-      { key: 'bmr',        lbl: 'BMR',               unit: 'kcal' },
       { key: 'gordakg',    lbl: 'Massa gorda',       unit: 'kg'   },
     ];
     const visiveis = campos.filter(c => dados[c.key] != null);
@@ -4840,6 +4935,7 @@ Posso confirmar? 😊`;
   window._enviarWhatsApp = enviarWhatsApp;
   window._enviarWhatsAppDireto = enviarWhatsAppDireto;
   window._salvarGerenciar = salvarGerenciar;
+  window.anivCarregar = anivCarregar;
 
   window.perfilEditarCampo = perfilEditarCampo;
   window.perfilCancelarEdit = perfilCancelarEdit;
