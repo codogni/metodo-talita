@@ -2154,10 +2154,7 @@
               <label class="evo-fl">Idade do corpo</label>
               <input type="number" step="1" id="evo-idadecorpo" class="evo-fi" placeholder="Ex: 34" />
             </div>
-            <div class="evo-fg evo-fg-full">
-              <label class="evo-fl">BMR (kcal/dia)</label>
-              <input type="number" step="1" id="evo-bmr" class="evo-fi" placeholder="Ex: 1450" />
-            </div>
+
           </div>
           <button class="evo-btn-salvar" onclick="evoSalvarRegistro()">Salvar medicao</button>
         </div>
@@ -2457,7 +2454,7 @@
       </div>
       <div id="lista-pendentes"></div>
       <div id="lista-ativas" style="display:none;"></div>
-      <div id="lista-aniversarios" style="display:none;"></div>
+      <div id="lista-aniversarios" style="display:none;overflow-y:auto;max-height:calc(100vh - 280px);"></div>
 
       <!-- AGENDA -->
       <div id="lista-agenda-admin" style="display:none;">
@@ -2938,12 +2935,8 @@
       if (checkState[k]) pts += v;
     }
     // Agua: +5 por copo, meta 8. Abaixo da meta desconta.
-    if (qtdCopos >= 8) {
-      pts += 40; // 8 * 5
-    } else {
-      pts += qtdCopos * 5;
-      pts -= (8 - qtdCopos) * 5;
-    }
+    // Agua: +5 por copo até 8, do 9 ao 12 continua somando
+    pts += Math.min(qtdCopos, 12) * 5;
     if (checkState['doce']) pts -= 10;
     if (checkState['alcool']) pts -= 15;
     if (checkState['fritura']) pts -= 10;
@@ -4748,6 +4741,9 @@ Posso confirmar? 😊`;
   };
   window._irParaAba = irParaAba;
   window._evoToggleForm = evoToggleForm;
+  window._evoSalvarRegistro = evoSalvarRegistro;
+  window._evoDeletar = evoDeletar;
+  window._evoMudarGrafico = evoMudarGrafico;
   window._abrirWppLoja = abrirWppLoja;
   window._confirmarConsulta = confirmarConsulta;
   window._agendarConsulta = agendarConsulta;
