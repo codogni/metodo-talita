@@ -3293,34 +3293,12 @@
     const q = query(collection(db, 'users'), orderBy('dataCadastro', 'desc'));
     onSnapshot(q, (snap) => {
       todosOsPacientes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      verificarPausaAutomatica();
       atualizarBadges();
       renderLista();
     });
   }
 
-  async function verificarPausaAutomatica() {
-    const agora = horaBrasilia();
-    for (const p of todosOsPacientes) {
-      // Só verifica pacientes ativas que já têm consultas registradas
-      if (p.status !== 'ativa') continue;
-      const consultas = p.consultas || [];
-      if (consultas.length === 0) continue; // Recém aprovada, sem consultas ainda — nunca pausa
 
-      // Encontra a data da última consulta
-      const datas = consultas
-        .map(c => new Date(c.data + 'T' + (c.hora || '00:00')))
-        .filter(d => !isNaN(d));
-      if (datas.length === 0) continue;
-
-      const ultimaConsulta = new Date(Math.max(...datas));
-      const diasPassados = Math.floor((agora - ultimaConsulta) / (1000 * 60 * 60 * 24));
-
-      if (diasPassados > 30) {
-        await updateDoc(doc(db, 'users', p.id), { status: 'suspensa' });
-      }
-    }
-  }
 
   function atualizarBadges() {
     const np = todosOsPacientes.filter(p => p.status === 'pendente').length;
