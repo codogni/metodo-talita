@@ -1743,6 +1743,19 @@
         </div>
 
         </div>
+        <div class="agua-row" id="agua-row">
+          <span class="agua-icon">💧</span>
+          <div style="flex:1;">
+            <div class="agua-label">Agua</div>
+            <div class="agua-meta">Meta: 8 copos de 250ml (+5 por copo)</div>
+          </div>
+          <div class="agua-stepper">
+            <button class="agua-btn" onclick="ajustarAgua(-1)">-</button>
+            <span class="agua-count" id="agua-count">0</span>
+            <button class="agua-btn" onclick="ajustarAgua(1)">+</button>
+          </div>
+        </div>
+
         <!-- Atividade e suplemento -->
         <div class="check-item" data-pts="20" data-key="atividade" onclick="toggleCheck(this)">
           <div class="check-box"></div>
@@ -1774,18 +1787,6 @@
       </div>
 
       <!-- Agua -->
-        <div class="agua-row" id="agua-row">
-          <span class="agua-icon">💧</span>
-          <div style="flex:1;">
-            <div class="agua-label">Agua</div>
-            <div class="agua-meta">Meta: 8 copos de 250ml (+5 por copo)</div>
-          </div>
-          <div class="agua-stepper">
-            <button class="agua-btn" onclick="ajustarAgua(-1)">-</button>
-            <span class="agua-count" id="agua-count">0</span>
-            <button class="agua-btn" onclick="ajustarAgua(1)">+</button>
-          </div>
-        </div>
 
       <!-- Acesso rápido -->
       <div class="section-title fade-up-4">Acesso rápido</div>
@@ -1816,7 +1817,7 @@
             <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </div>
           <div>
-            <div class="quick-label">Foto do Prato</div>
+            <div class="quick-label">Registrar</div>
             <div class="quick-sub">Analise com IA</div>
           </div>
         </div>
@@ -1871,6 +1872,10 @@
       <svg viewBox="0 0 24 24" style="stroke: var(--sage);"><circle cx="12" cy="12" r="10" fill="var(--sage)" stroke="var(--sage)"/><line x1="12" y1="8" x2="12" y2="16" stroke="white" stroke-width="2"/><line x1="8" y1="12" x2="16" y2="12" stroke="white" stroke-width="2"/></svg>
       <span>Registrar</span>
     </div>
+    <div class="nav-item" id="nav-loja" onclick="irParaAba('loja')">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span>Loja</span>
+    </div>
 
     <div class="nav-item" id="nav-perfil" onclick="irParaAba('perfil')">
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1907,6 +1912,10 @@
     <div class="nav-item" id="cnav-registrar" onclick="irParaAba('registrar')">
       <svg viewBox="0 0 24 24" style="stroke: var(--sage);"><circle cx="12" cy="12" r="10" fill="var(--sage)" stroke="var(--sage)"/><line x1="12" y1="8" x2="12" y2="16" stroke="white" stroke-width="2"/><line x1="8" y1="12" x2="16" y2="12" stroke="white" stroke-width="2"/></svg>
       <span>Registrar</span>
+    </div>
+    <div class="nav-item" id="cnav-loja" onclick="irParaAba('loja')">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span>Loja</span>
     </div>
 
     <div class="nav-item" id="cnav-perfil" onclick="irParaAba('perfil')">
@@ -1995,6 +2004,10 @@
     <div class="nav-item" id="lnav-registrar" onclick="irParaAba('registrar')">
       <svg viewBox="0 0 24 24" style="stroke: var(--sage);"><circle cx="12" cy="12" r="10" fill="var(--sage)" stroke="var(--sage)"/><line x1="12" y1="8" x2="12" y2="16" stroke="white" stroke-width="2"/><line x1="8" y1="12" x2="16" y2="12" stroke="white" stroke-width="2"/></svg>
       <span>Registrar</span>
+    </div>
+    <div class="nav-item" id="lnav-loja" onclick="irParaAba('loja')">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span>Loja</span>
     </div>
 
     <div class="nav-item" id="lnav-perfil" onclick="irParaAba('perfil')">
@@ -2166,6 +2179,10 @@
       <svg viewBox="0 0 24 24" style="stroke: var(--sage);"><circle cx="12" cy="12" r="10" fill="var(--sage)" stroke="var(--sage)"/><line x1="12" y1="8" x2="12" y2="16" stroke="white" stroke-width="2"/><line x1="8" y1="12" x2="16" y2="12" stroke="white" stroke-width="2"/></svg>
       <span>Registrar</span>
     </div>
+    <div class="nav-item" id="enav-loja" onclick="irParaAba('loja')">
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span>Loja</span>
+    </div>
 
     <div class="nav-item" id="enav-perfil" onclick="irParaAba('perfil')">
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -2181,7 +2198,7 @@
 <div id="screen-registrar" class="screen">
   <div class="reg-wrap">
     <div class="reg-topbar fade-up">
-      <div class="reg-topbar-title">Foto do <em>Prato</em></div>
+      <div class="reg-topbar-title">Registrar <em>Refeição</em></div>
       <div class="reg-topbar-sub">Registre suas refeicoes do dia</div>
     </div>
 
@@ -4714,8 +4731,21 @@ Posso confirmar? 😊`;
     window._fazerLogin = fazerLogin;
   window._fazerCadastro = fazerCadastro;
   window._mostrarTela = mostrarTela;
-  window._toggleCheck = toggleCheck;
-  window._ajustarAgua = ajustarAgua;
+  window._toggleCheck = function(el) {
+    const key = el.dataset.key;
+    if (!key) return;
+    el.classList.toggle('done');
+    checkState[key] = el.classList.contains('done');
+    atualizarPontosUI();
+    salvarChecklistFirebase();
+  };
+  window._ajustarAgua = function(delta) {
+    qtdCopos = Math.max(0, Math.min(12, qtdCopos + delta));
+    const el = document.getElementById('agua-count');
+    if (el) el.textContent = qtdCopos;
+    atualizarPontosUI();
+    salvarChecklistFirebase();
+  };
   window._irParaAba = irParaAba;
   window._evoToggleForm = evoToggleForm;
   window._abrirWppLoja = abrirWppLoja;
