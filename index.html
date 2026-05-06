@@ -2773,7 +2773,9 @@
       const diasDesdeUltima = (agora - passadas[0]) / (1000 * 60 * 60 * 24);
       if (diasDesdeUltima <= 30) return 'ativa';
     }
-    // Se chegou aqui, pausa automaticamente
+    // Se não tem nenhuma consulta cadastrada, mantém ativa
+    if (consultas.length === 0) return 'ativa';
+    // Se chegou aqui, tem consultas mas todas passaram há mais de 30 dias - pausa
     try {
       await updateDoc(doc(db, 'users', uid), { status: 'suspensa' });
     } catch(e) {}
@@ -3626,7 +3628,7 @@
       </div>
       <div class="adm-actions">
         <button class="abtn abtn-sage" onclick="abrirGerenciar('${p.id}')">Gerenciar</button>
-        <button class="abtn abtn-amber" onclick="adminSuspender('${p.id}','${(p.nome||'').replace(/'/g,"\'")}','${p.status}')">
+        <button class="abtn abtn-amber" onclick="adminSuspender('${p.id}')">
           ${pausada?'Reativar':'Pausar'}
         </button>
         <button class="abtn abtn-red" onclick="adminExcluir('${p.id}','${(p.nome||'').replace(/'/g,"\'")}')">🗑</button>
