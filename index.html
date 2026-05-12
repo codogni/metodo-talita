@@ -736,10 +736,10 @@
 
     /* ─── ADMIN ─── */
     .adm-tab {
-      padding:14px 16px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:400;
+      padding:12px 8px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:400;
       color:var(--text-soft);border:none;border-bottom:2px solid transparent;
-      background:none;cursor:pointer;display:flex;align-items:center;gap:7px;
-      transition:color 0.2s;white-space:nowrap;
+      background:none;cursor:pointer;display:flex;align-items:center;gap:4px;
+      transition:color 0.2s;white-space:nowrap;flex:1;justify-content:center;
     }
     .adm-tab.active { font-weight:500;color:var(--sage);border-bottom-color:var(--sage); }
     .adm-card {
@@ -1579,7 +1579,7 @@
 
         <div class="form-group">
           <label class="form-label">Data de nascimento</label>
-          <input id="cad-nasc" type="date" class="form-input" />
+          <input id="cad-nasc" type="text" class="form-input" placeholder="DD/MM/AAAA" maxlength="10" oninput="formatarData(this)" />
         </div>
 
         <div class="form-group">
@@ -2851,7 +2851,7 @@
       const sexo = document.getElementById('cad-sexo').value;
       await setDoc(doc(db, 'users', cred.user.uid), {
         nome, email, telefone: tel, sexo,
-        dataNasc: document.getElementById('cad-nasc').value || '',
+        dataNasc: (function(){ const v = document.getElementById('cad-nasc').value || ''; if(v.includes('/')) { const p = v.split('/'); return p.length===3 ? p[2]+'-'+p[1]+'-'+p[0] : v; } return v; })(),
         status: 'pendente',
         dataCadastro: serverTimestamp(),
         consultas: [],
@@ -4257,39 +4257,12 @@ Posso confirmar? 😊`;
       return;
     }
 
-    const totalKcal = registros.reduce((s, r) => s + (r.totalKcal || 0), 0);
-    const totalProt = registros.reduce((s, r) => s + (r.proteina || 0), 0);
-    const totalCarb = registros.reduce((s, r) => s + (r.carboidrato || 0), 0);
-    const totalGord = registros.reduce((s, r) => s + (r.gordura || 0), 0);
-
     const d = new Date(data + 'T12:00:00');
     const dataFmt = d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
 
     let html = `<div style="font-size:12px;font-weight:600;color:var(--text-mid);margin-bottom:8px;text-transform:capitalize;">${dataFmt}</div>`;
 
-    html += `<div class="rec-totais">
-      <div class="rec-total-item">
-        <div class="rec-total-lbl">Total</div>
-        <div class="rec-total-val">${totalKcal}<span class="rec-total-unit"> kcal</span></div>
-      </div>
-      <div class="rec-total-item">
-        <div class="rec-total-lbl">Prot</div>
-        <div class="rec-total-val">${totalProt}<span class="rec-total-unit"> g</span></div>
-      </div>
-      <div class="rec-total-item">
-        <div class="rec-total-lbl">Carb</div>
-        <div class="rec-total-val">${totalCarb}<span class="rec-total-unit"> g</span></div>
-      </div>
-      <div class="rec-total-item">
-        <div class="rec-total-lbl">Gord</div>
-        <div class="rec-total-val">${totalGord}<span class="rec-total-unit"> g</span></div>
-      </div>
-    </div>`;
-
     registros.forEach(r => {
-      const tagOrigem = r.origem === 'foto'
-        ? '<span class="rec-origem-tag rec-origem-foto">foto</span>'
-        : '<span class="rec-origem-tag rec-origem-manual">manual</span>';
       const alimentos = (r.alimentos || []).map(a =>
         `<div class="rec-alim-row">
           <span>${a.nome}</span>
@@ -4299,15 +4272,9 @@ Posso confirmar? 😊`;
       html += `<div class="rec-ref-card">
         <div class="rec-ref-head">
           <div>
-            <span class="rec-ref-nome">${r.refeicao || 'Refeicao'}</span>${tagOrigem}
+            <span class="rec-ref-nome">${r.refeicao || 'Refeicao'}</span>
             <div class="rec-ref-hora">${r.hora || ''}</div>
           </div>
-          <div class="rec-ref-kcal">${r.totalKcal || 0} kcal</div>
-        </div>
-        <div class="rec-ref-macros">
-          <span class="rec-macro-chip">Prot: ${r.proteina || 0}g</span>
-          <span class="rec-macro-chip">Carb: ${r.carboidrato || 0}g</span>
-          <span class="rec-macro-chip">Gord: ${r.gordura || 0}g</span>
         </div>
         ${alimentos}
       </div>`;
@@ -4775,6 +4742,14 @@ Posso confirmar? 😊`;
   window.duvidaKeyEnter = duvidaKeyEnter;
   window.duvidaEnviar = duvidaEnviar;
   window.renderPerfil = renderPerfil;
+  function formatarData(el) {
+    let v = el.value.replace(/\D/g,'');
+    if (v.length > 2) v = v.slice(0,2) + '/' + v.slice(2);
+    if (v.length > 5) v = v.slice(0,5) + '/' + v.slice(5);
+    el.value = v.slice(0,10);
+  }
+  window.formatarData = formatarData;
+
   if ('serviceWorker' in navigator) {
     const swCode = `self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>self.clients.claim());`;
     const swBlob = new Blob([swCode], {type:'application/javascript'});
