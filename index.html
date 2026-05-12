@@ -123,8 +123,8 @@
     }
 
     .auth-header {
-      padding-top: 72px;
-      padding-bottom: 48px;
+      padding-top: 28px;
+      padding-bottom: 16px;
       text-align: center;
     }
 
@@ -132,11 +132,11 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 56px;
-      height: 56px;
+      width: 48px;
+      height: 48px;
       background: var(--sage);
       border-radius: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       box-shadow: 0 8px 24px rgba(74,99,88,0.25);
     }
 
@@ -150,7 +150,7 @@
 
     .auth-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 32px;
+      font-size: 26px;
       font-weight: 400;
       color: var(--text);
       line-height: 1.2;
@@ -1538,10 +1538,7 @@
 
         <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
 
-        <div class="auth-switch" style="margin-top: 16px;">
-          Ainda não tem acesso?
-          <a href="#" onclick="mostrarTela('screen-cadastro')">Cadastre-se</a>
-        </div>
+        <button class="btn-secondary" style="margin-top: 12px;" onclick="mostrarTela('screen-cadastro')">Ainda não tenho conta</button>
       </div>
     </div>
   </div>
@@ -4483,14 +4480,17 @@ Posso confirmar? 😊`;
   async function regSalvarManual() {
     const texto = document.getElementById('reg-manual-texto')?.value?.trim();
     if (!texto) { showToast('Descreva o que voce comeu'); return; }
-    const form = document.getElementById('reg-manual-form');
-    form.style.opacity = '0.6';
-    showToast('Analisando...');
-    const resultado = await regAnalisarTexto(texto, regRefSelecionada);
-    form.style.opacity = '1';
-    if (!resultado) { showToast('Erro ao processar. Tente novamente.'); return; }
+    const resultado = {
+      refeicao: regRefSelecionada || 'Refeicao',
+      alimentos: [{ nome: texto, qtd: '' }],
+      totalKcal: 0,
+      proteina: 0,
+      carboidrato: 0,
+      gordura: 0
+    };
     await regSalvarFirestore(resultado, 'manual');
     document.getElementById('reg-manual-texto').value = '';
+    const form = document.getElementById('reg-manual-form');
     form.style.display = 'none';
     document.getElementById('reg-manual-conf').classList.add('show');
   }
