@@ -3189,6 +3189,8 @@
 
   function iniciarAdmin() {
     mostrarTela('screen-admin');
+    // Esconde a barra de navegação de paciente no admin
+    document.querySelectorAll('.bottom-nav').forEach(el => el.style.display = 'none');
     const q = query(collection(db, 'users'), orderBy('dataCadastro', 'desc'));
     onSnapshot(q, (snap) => {
       todosOsPacientes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
