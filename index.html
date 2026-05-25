@@ -2772,6 +2772,7 @@
       iniciarEscutaPerfil(user.uid);
     } else {
       if (perfilUnsubscribe) { perfilUnsubscribe(); perfilUnsubscribe = null; }
+      perfilAtual = {};
     }
   });
 
@@ -2794,6 +2795,7 @@
   }
 
   function carregarHome(perfil) {
+    const primeiraVez = !perfilAtual.uid;
     perfilAtual = { ...perfil };
     const primeiroNome = perfil.nome ? perfil.nome.split(' ')[0] : 'Paciente';
     document.getElementById('home-nome').textContent = primeiroNome;
@@ -2856,7 +2858,6 @@
     }
 
     const uid = perfil.uid || (auth.currentUser ? auth.currentUser.uid : null);
-    const primeiraVez = !perfilAtual.uid;
     if (uid) perfilAtual.uid = uid;
 
     if (primeiraVez) {
@@ -2875,9 +2876,8 @@
     if (!email || !senha) { showToast('Preencha todos os campos'); return; }
     showToast('Entrando...');
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, senha);
-      if (email === ADMIN_EMAIL) { iniciarAdmin(); return; }
-      iniciarEscutaPerfil(cred.user.uid);
+      await signInWithEmailAndPassword(auth, email, senha);
+      // onAuthStateChanged cuida do redirecionamento
     } catch (e) {
       showToast('E-mail ou senha incorretos');
     }
@@ -2970,7 +2970,7 @@
   // ─── SISTEMA DE PONTOS ───
   let qtdCopos = 0;
   let checkState = {};
-  let perfilAtual = null;
+  let perfilAtual = {};
 
   function calcularPontosHoje() {
     let pts = 0;
@@ -4673,12 +4673,14 @@ Posso confirmar? 😊`;
 
   async function perfilLogout() {
     if (!confirm('Deseja sair da conta?')) return;
+    perfilAtual = null;
     await signOut(auth);
     mostrarTela('screen-login');
   }
 
   async function confirmarSaida() {
     if (!confirm('Deseja sair da conta?')) return;
+    perfilAtual = null;
     await signOut(auth);
     mostrarTela('screen-login');
   }
