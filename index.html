@@ -1579,6 +1579,11 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Data de nascimento</label>
+          <input id="cad-nasc" type="date" class="form-input" />
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Sexo</label>
           <select id="cad-sexo" class="form-input" style="appearance:none;">
             <option value="">Selecione...</option>
@@ -2095,58 +2100,7 @@
         <div id="evo-hist-lista"></div>
       </div>
 
-      <!-- Formulario -->
-      <div class="evo-form-card fade-up-4">
-        <button class="evo-form-toggle" onclick="evoToggleForm()">
-          <span>Registrar nova medicao</span>
-          <div class="evo-form-icon" id="evo-form-icon">+</div>
-        </button>
-        <div class="evo-form-inner" id="evo-form-inner">
-          <div class="evo-fg">
-            <label class="evo-fl">Data da medicao</label>
-            <input type="date" id="evo-data" class="evo-fi" />
-          </div>
-          <div class="evo-form-grid">
-            <div class="evo-fg">
-              <label class="evo-fl">Peso (kg)</label>
-              <input type="number" step="0.1" id="evo-peso" class="evo-fi" placeholder="Ex: 68.5" />
-            </div>
-            <div class="evo-fg">
-              <label class="evo-fl">Massa muscular (kg)</label>
-              <input type="number" step="0.1" id="evo-muscular" class="evo-fi" placeholder="Ex: 26.0" />
-            </div>
-            <div class="evo-fg">
-              <label class="evo-fl">Massa gorda (kg)</label>
-              <input type="number" step="0.1" id="evo-gordakg" class="evo-fi" placeholder="Ex: 20.0" />
-            </div>
-            <div class="evo-fg">
-              <label class="evo-fl">Gordura visceral</label>
-              <input type="number" step="1" id="evo-visceral" class="evo-fi" placeholder="Ex: 8" />
-            </div>
-            <div class="evo-fg">
-              <label class="evo-fl">Relacao gordura (%)</label>
-              <input type="number" step="0.1" id="evo-gordapct" class="evo-fi" placeholder="Ex: 29.3" />
-            </div>
-            <div class="evo-fg">
-              <label class="evo-fl">Agua corporal (%)</label>
-              <input type="number" step="0.1" id="evo-aguapct" class="evo-fi" placeholder="Ex: 52.0" />
-            </div>
-            <div class="evo-fg">
-              <label class="evo-fl">IMC</label>
-              <input type="number" step="0.1" id="evo-imc" class="evo-fi" placeholder="Ex: 24.8" />
-            </div>
-            <div class="evo-fg">
-              <label class="evo-fl">Idade do corpo</label>
-              <input type="number" step="1" id="evo-idadecorpo" class="evo-fi" placeholder="Ex: 34" />
-            </div>
-            <div class="evo-fg evo-fg-full">
-              <label class="evo-fl">BMR (kcal/dia)</label>
-              <input type="number" step="1" id="evo-bmr" class="evo-fi" placeholder="Ex: 1450" />
-            </div>
-          </div>
-          <button class="evo-btn-salvar" onclick="evoSalvarRegistro()">Salvar medicao</button>
-        </div>
-      </div>
+
 
     </div>
   </div>
@@ -2901,13 +2855,17 @@
       wrap.style.display = 'none';
     }
 
-    mostrarTela('screen-home');
-    exibirMensagemMotivacional();
-    if (perfil.uid || auth.currentUser) {
-      const uid = perfil.uid || auth.currentUser.uid;
-      perfilAtual.uid = uid;
-      carregarChecklistFirebase(uid);
-      carregarEvolucao(uid);
+    const uid = perfil.uid || (auth.currentUser ? auth.currentUser.uid : null);
+    const primeiraVez = !perfilAtual.uid;
+    if (uid) perfilAtual.uid = uid;
+
+    if (primeiraVez) {
+      mostrarTela('screen-home');
+      exibirMensagemMotivacional();
+      if (uid) {
+        carregarChecklistFirebase(uid);
+        carregarEvolucao(uid);
+      }
     }
   }
 
@@ -2938,8 +2896,9 @@
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, senha);
       const sexo = document.getElementById('cad-sexo').value;
+      const dataNascimento = document.getElementById('cad-nasc').value || '';
       await setDoc(doc(db, 'users', cred.user.uid), {
-        nome, email, telefone: tel, sexo,
+        nome, email, telefone: tel, sexo, dataNascimento,
         status: 'pendente',
         dataCadastro: serverTimestamp(),
         consultas: [],
