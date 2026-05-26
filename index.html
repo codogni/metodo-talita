@@ -2799,7 +2799,7 @@
           </div>
           <div style="flex:1;">
             <div style="font-size:13px;font-weight:500;">${dataFmt}</div>
-            <div style="font-size:12px;color:var(--text-soft);">${hora ? 'às ' + hora : ''}</div>
+            <div style="font-size:12px;color:var(--text-soft);">${hora ? 'às ' + hora : ''}${c.tipo ? ' · ' + ({primeira:'1ª Consulta',consulta:'Consulta',semanal:'Retorno semanal',quinzenal:'Retorno quinzenal'}[c.tipo]||c.tipo) : ''}</div>
           </div>
           ${badge}
         </div>`;
@@ -2862,7 +2862,7 @@
           </div>
           <div style="flex:1;">
             <div style="font-size:13px;font-weight:500;">${dataFmt}</div>
-            <div style="font-size:12px;color:var(--text-soft);">${hora ? 'às ' + hora : ''}</div>
+            <div style="font-size:12px;color:var(--text-soft);">${hora ? 'às ' + hora : ''}${c.tipo ? ' · ' + ({primeira:'1ª Consulta',consulta:'Consulta',semanal:'Retorno semanal',quinzenal:'Retorno quinzenal'}[c.tipo]||c.tipo) : ''}</div>
           </div>
           ${badge}
         </div>`;
