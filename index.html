@@ -3628,7 +3628,7 @@
     const n = ini(p.nome);
     const pausada = p.status === 'suspensa';
     const prox = proximaConsultaInfo(p);
-    const dias = prox ? Math.ceil((prox.d - new Date()) / 86400000) : null;
+    const hojeAdm = new Date(); hojeAdm.setHours(0,0,0,0); const proxAdm = prox ? new Date(prox.data) : null; if (proxAdm) proxAdm.setHours(0,0,0,0); const dias = prox ? Math.round((proxAdm - hojeAdm) / 86400000) : null;
     const tagAlerta = alertaTag(dias);
     const tagConsulta = prox ? `<span class="adm-tag-amber">📅 ${prox.d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})} ${prox.hora||''}</span>` : '';
     const tagPdf = p.menuPdfUrl ? `<a class="adm-tag-sage" href="${p.menuPdfUrl}" target="_blank">📄 Cardápio</a>` : '';
@@ -3754,7 +3754,9 @@
     const sorted = [...agendaTemp].sort((a,b) => new Date(a.data+'T'+a.hora) - new Date(b.data+'T'+b.hora));
     lista.innerHTML = sorted.map((c, i) => {
       const d = new Date(c.data + 'T' + (c.hora||'00:00'));
-      const dias = Math.ceil((d - new Date()) / 86400000);
+      const hojeRA = new Date(); hojeRA.setHours(0,0,0,0);
+      const dRA = new Date(c.data); dRA.setHours(0,0,0,0);
+      const dias = Math.round((dRA - hojeRA) / 86400000);
       const dataFmt = d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
       let alertaHtml = '';
       if (dias === 0) alertaHtml = '<span style="color:#A85A5A;font-size:11px;font-weight:700;">🔴 Hoje</span>';
