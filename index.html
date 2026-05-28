@@ -2763,7 +2763,9 @@
     if (futuras.length) {
       const prox = futuras[0];
       const dataFmt = prox.d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
-      const dias = Math.ceil((prox.d - agora) / 86400000);
+      const hojeZ = new Date(); hojeZ.setHours(0,0,0,0);
+      const proxZ = new Date(prox.data); proxZ.setHours(0,0,0,0);
+      const dias = Math.round((proxZ - hojeZ) / 86400000);
       document.getElementById('home-prox-data').textContent = dataFmt + ' às ' + prox.hora;
       document.getElementById('home-prox-dias').textContent = dias === 0 ? 'Hoje!' : dias === 1 ? 'Amanhã!' : `Daqui ${dias} dias`;
     } else if (perfil.proximaConsulta) {
@@ -2784,8 +2786,10 @@
         .map(c => ({ ...c, d: new Date(c.data + 'T' + (c.hora||'00:00')) }))
         .sort((a,b) => a.d - b.d);
       lista.innerHTML = todasSorted.map((c, i) => {
-        const passou = c.d < agora;
-        const dias = Math.ceil((c.d - agora) / 86400000);
+        const hojeZ2 = new Date(); hojeZ2.setHours(0,0,0,0);
+        const cZ = new Date(c.data); cZ.setHours(0,0,0,0);
+        const passou = cZ < hojeZ2;
+        const dias = Math.round((cZ - hojeZ2) / 86400000);
         const dataFmt = c.d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
         const hora = c.hora || '';
         let badge = '';
@@ -2829,7 +2833,7 @@
     if (futuras.length) {
       const prox = futuras[0];
       const dataFmt = prox.d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
-      const dias = Math.ceil((prox.d - agora) / 86400000);
+      const hojeZ3 = new Date(); hojeZ3.setHours(0,0,0,0); const proxZ3 = new Date(prox.data); proxZ3.setHours(0,0,0,0); const dias = Math.round((proxZ3 - hojeZ3) / 86400000);
       document.getElementById('home-prox-data').textContent = dataFmt + ' às ' + prox.hora;
       document.getElementById('home-prox-dias').textContent = dias === 0 ? 'Hoje!' : dias === 1 ? 'Amanhã!' : `Daqui ${dias} dias`;
     } else if (perfil.proximaConsulta) {
@@ -2848,7 +2852,7 @@
         .sort((a,b) => a.d - b.d);
       lista.innerHTML = todasSorted.map((c, i) => {
         const passou = c.d < agora;
-        const dias = Math.ceil((c.d - agora) / 86400000);
+        const hojeZ4 = new Date(); hojeZ4.setHours(0,0,0,0); const cZ4 = new Date(c.data); cZ4.setHours(0,0,0,0); const dias = Math.round((cZ4 - hojeZ4) / 86400000);
         const dataFmt = c.d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
         const hora = c.hora || '';
         let badge = '';
@@ -3857,7 +3861,7 @@ Posso confirmar? 😊`;
     if (!p) return;
     const agora = new Date();
     const d = new Date(data + 'T' + (hora||'00:00'));
-    const dias = Math.ceil((d - agora) / 86400000);
+    const hojeZ5 = new Date(); hojeZ5.setHours(0,0,0,0); const dZ5 = new Date(p.data); dZ5.setHours(0,0,0,0); const dias = Math.round((dZ5 - hojeZ5) / 86400000);
     const tipo = p.tipoAtendimento || '';
     const nome = p.nome ? p.nome.split(' ')[0] : '';
     const juntos = p.sexo === 'masculino' ? 'juntos' : 'juntas';
