@@ -3302,7 +3302,7 @@
           <div style="font-size:14px;font-weight:500;">${p.nome}</div>
           <div style="font-size:12px;color:var(--text-soft);margin-top:2px;">${tipoLabel} · ${label} · ${c.hora||''}</div>
         </div>
-        <button onclick="enviarWhatsAppDireto('${p.id}','${c.data}','${c.hora||''}')" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;">
+        <button onclick="enviarWhatsAppDireto('${p.id}','${c.data}','${c.hora||''}','${c.tipo||''}')" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;">
           💬 Enviar
         </button>
       </div>`;
@@ -3858,13 +3858,13 @@ Posso confirmar? 😊`;
     window.open(url, '_blank');
   }
 
-  function enviarWhatsAppDireto(uid, data, hora) {
+  function enviarWhatsAppDireto(uid, data, hora, tipoConsulta) {
     const p = todosOsPacientes.find(x => x.id === uid);
     if (!p) return;
     const agora = new Date();
     const d = new Date(data + 'T' + (hora||'00:00'));
     const hojeZ5 = new Date(); hojeZ5.setHours(0,0,0,0); const dZ5 = new Date(p.data); dZ5.setHours(0,0,0,0); const dias = Math.round((dZ5 - hojeZ5) / 86400000);
-    const tipo = p.tipoAtendimento || '';
+    const tipo = tipoConsulta || p.tipoAtendimento || '';
     const nome = p.nome ? p.nome.split(' ')[0] : '';
     const juntos = p.sexo === 'masculino' ? 'juntos' : 'juntas';
     let msg = '';
