@@ -3280,7 +3280,7 @@
           const dDia = new Date(c.data + 'T00:00:00');
           const dSemHora = new Date(dDia.getFullYear(), dDia.getMonth(), dDia.getDate());
           const dias = Math.round((dSemHora - hoje) / 86400000);
-          if (dias === 1 || dias === 4) {
+          if (dias === 1) {
             msgs.push({ p, c, d: new Date(c.data + 'T' + (c.hora||'00:00')), dias });
           }
         });
