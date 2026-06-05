@@ -2652,7 +2652,7 @@
   function fecharModalGerenciar(e) { if(window._fecharModalGerenciar) window._fecharModalGerenciar(e); }
   function adicionarConsulta() { if(window._adicionarConsulta) window._adicionarConsulta(); }
   function removerConsulta(i) { if(window._removerConsulta) window._removerConsulta(i); }
-  function enviarWhatsApp(i) { if(window._enviarWhatsApp) window._enviarWhatsApp(i); }
+  function enviarWhatsApp(i, t) { if(window._enviarWhatsApp) window._enviarWhatsApp(i, t); }
   function enviarWhatsAppDireto(u,d,h) { if(window._enviarWhatsAppDireto) window._enviarWhatsAppDireto(u,d,h); }
   function salvarGerenciar() { if(window._salvarGerenciar) window._salvarGerenciar(); }
   function regMudarTab(t) { if(window._regMudarTab) window._regMudarTab(t); }
@@ -3774,7 +3774,7 @@
             <span style="font-size:10px;font-weight:600;color:var(--sage);background:var(--sage-pale);padding:2px 7px;border-radius:10px;">${tipoTag}</span>
           </div>
         </div>
-        ${podeMsgWpp || true ? `<button class="btn-wpp" onclick="enviarWhatsApp(${i})">💬 WhatsApp</button>` : ''}
+        ${podeMsgWpp || true ? `<button class="btn-wpp" onclick="enviarWhatsApp(${i}, '${c.tipo||''}')" >💬 WhatsApp</button>` : ''}
         <button onclick="removerConsulta(${i})" style="background:none;border:none;color:var(--text-soft);font-size:16px;cursor:pointer;padding:4px;flex-shrink:0;">×</button>
       </div>`;
     }).join('');
@@ -3797,11 +3797,11 @@
     renderAgenda();
   }
 
-  function enviarWhatsApp(idx) {
+  function enviarWhatsApp(idx, tipoFromBtn) {
     if (!pacienteAtual) return;
     const sorted = [...agendaTemp].sort((a,b) => new Date(a.data+'T'+a.hora) - new Date(b.data+'T'+b.hora));
     const c = sorted[idx];
-    const tipo = c.tipo || document.getElementById('modal-tipo').value || pacienteAtual.tipoAtendimento || '';
+    const tipo = tipoFromBtn || c.tipo || document.getElementById('modal-tipo').value || pacienteAtual.tipoAtendimento || '';
     const nome = pacienteAtual.nome ? pacienteAtual.nome.split(' ')[0] : '';
     const hora = c.hora || '';
     let msg = '';
@@ -3864,7 +3864,8 @@ Posso confirmar? 😊`;
     const agora = new Date();
     const d = new Date(data + 'T' + (hora||'00:00'));
     const hojeZ5 = new Date(); hojeZ5.setHours(0,0,0,0); const dZ5 = new Date(p.data); dZ5.setHours(0,0,0,0); const dias = Math.round((dZ5 - hojeZ5) / 86400000);
-    const tipo = tipoConsulta || p.tipoAtendimento || '';
+    const consultaObj = (p.consultas || []).find(c => c.data === data);
+    const tipo = tipoConsulta || (consultaObj && consultaObj.tipo) || p.tipoAtendimento || '';
     const nome = p.nome ? p.nome.split(' ')[0] : '';
     const juntos = p.sexo === 'masculino' ? 'juntos' : 'juntas';
     let msg = '';
