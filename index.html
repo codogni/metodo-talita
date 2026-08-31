@@ -1227,6 +1227,9 @@
     .reg-dia-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
     .reg-dia-titulo { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:500; }
     .reg-dia-sub { font-size:12px; color:var(--text-soft); margin-top:2px; }
+    .reg-nav-btn { background:none; border:1.5px solid var(--cream-dark); border-radius:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; }
+    .reg-nav-btn:active { background:var(--cream-dark); }
+    .reg-nav-btn svg { width:16px; height:16px; stroke:var(--sage); fill:none; stroke-width:2; }
     .reg-ref-card { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow-card); margin-bottom:12px; overflow:hidden; }
     .reg-ref-head { padding:13px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--cream-dark); }
     .reg-ref-titulo { display:flex; align-items:center; gap:10px; }
@@ -2233,10 +2236,16 @@
       <!-- PAINEL MEU DIA -->
       <div id="reg-painel-dia" style="display:none;">
         <div class="reg-dia-header">
-          <div>
+          <button class="reg-nav-btn" onclick="regNavDia(-1)">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div style="text-align:center;flex:1;">
             <div class="reg-dia-titulo" id="reg-dia-titulo">Hoje</div>
             <div class="reg-dia-sub" id="reg-dia-sub">Nenhuma refeicao registrada ainda</div>
           </div>
+          <button class="reg-nav-btn" id="reg-nav-proximo" onclick="regNavDia(1)">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
         <!-- Card meta calórica -->
         <div class="meta-kcal-card" id="meta-kcal-card" style="display:none;">
@@ -2656,6 +2665,7 @@
   function enviarWhatsAppDireto(u,d,h) { if(window._enviarWhatsAppDireto) window._enviarWhatsAppDireto(u,d,h); }
   function salvarGerenciar() { if(window._salvarGerenciar) window._salvarGerenciar(); }
   function regMudarTab(t) { if(window._regMudarTab) window._regMudarTab(t); }
+  function regNavDia(dir) { if(window._regNavDia) window._regNavDia(dir); }
   function regSimularAnalise() { if(window._regSimularAnalise) window._regSimularAnalise(); }
   function regSalvarFoto() { if(window._regSalvarFoto) window._regSalvarFoto(); }
   function regVoltarUpload() { if(window._regVoltarUpload) window._regVoltarUpload(); }
@@ -3130,7 +3140,7 @@
       });
     });
     if (aba === 'cardapio') renderizarCardapio();
-    if (aba === 'registrar') regCarregarDia();
+    if (aba === 'registrar') { regDiaOffset = 0; regCarregarDia(); }
     if (aba === 'perfil') renderPerfil();
   }
 
@@ -4417,18 +4427,44 @@ Posso confirmar? 😊`;
     await addDoc(collection(db, 'users', perfilAtual.uid, 'registros'), reg);
   }
 
+  let regDiaOffset = 0;
+  let _regSnapshotUnsub = null;
+
+  function regNavDia(dir) {
+    const novoOffset = regDiaOffset + dir;
+    if (novoOffset > 0) return; // nao avanca alem de hoje
+    regDiaOffset = novoOffset;
+    regCarregarDia();
+  }
+
   async function regCarregarDia() {
     if (!perfilAtual?.uid) return;
-    const hoje = horaBrasilia().toISOString().split('T')[0];
+    if (_regSnapshotUnsub) { _regSnapshotUnsub(); _regSnapshotUnsub = null; }
+
+    const base = horaBrasilia();
+    base.setDate(base.getDate() + regDiaOffset);
+    const dataSel = base.toISOString().split('T')[0];
+
+    const titulo = document.getElementById('reg-dia-titulo');
+    const btnProx = document.getElementById('reg-nav-proximo');
+
+    if (titulo) {
+      if (regDiaOffset === 0) {
+        titulo.textContent = 'Hoje, ' + base.toLocaleDateString('pt-BR', {day:'2-digit', month:'long'});
+      } else if (regDiaOffset === -1) {
+        titulo.textContent = 'Ontem, ' + base.toLocaleDateString('pt-BR', {day:'2-digit', month:'long'});
+      } else {
+        titulo.textContent = base.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long'});
+      }
+    }
+    if (btnProx) btnProx.style.opacity = regDiaOffset === 0 ? '0.3' : '1';
+
     const ref = collection(db, 'users', perfilAtual.uid, 'registros');
     const q = query(ref, orderBy('hora', 'asc'));
-    onSnapshot(q, snap => {
-      regRefeicoesDia = snap.docs.map(d => d.data()).filter(r => r.data === hoje);
+    _regSnapshotUnsub = onSnapshot(q, snap => {
+      regRefeicoesDia = snap.docs.map(d => d.data()).filter(r => r.data === dataSel);
       regRenderDia();
     });
-    const d = horaBrasilia();
-    const titulo = document.getElementById('reg-dia-titulo');
-    if (titulo) titulo.textContent = 'Hoje, ' + d.toLocaleDateString('pt-BR', {day:'2-digit', month:'long'});
   }
 
   function regRenderDia() {
@@ -4753,6 +4789,7 @@ Posso confirmar? 😊`;
   // ─── FIM DÚVIDAS ─────────────────────────────────────────────────────────
 
   // Expor funções globalmente para os onclick do HTML
+  window._regNavDia = regNavDia;
   window._regMudarTab = regMudarTab;
   window._regSimularAnalise = regSimularAnalise;
   window._regSalvarFoto = regSalvarFoto;
